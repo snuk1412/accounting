@@ -100,10 +100,13 @@
             ])
           @endforeach
         </tbody>
+
       </table>
+<div class="mt-4">
+    {{ $accounts->links('pagination::bootstrap-4') }}
+</div>
     </div>
   </div>
-
   <script>
     function toggleDark() {
       document.body.classList.toggle('dark-mode');

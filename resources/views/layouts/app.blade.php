@@ -158,40 +158,53 @@
 <body>
 
   <!-- Sidebar -->
-  <div class="sidebar">
-    <h4>💼 <span>Accounting</span></h4>
+<div class="sidebar">
+  <h4>💼 <span>ระบบบัญชี</span></h4>
 
-    <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
-      <i class="fas fa-chart-line"></i> <span>Dashboard</span>
-    </a>
+  {{-- เห็นได้ทุกคน --}}
+  <a href="{{ route('dashboard') }}"
+     class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
+    <i class="fas fa-chart-line"></i> <span>Dashboard</span>
+  </a>
+
+  {{-- แสดงเมนูเฉพาะตอน Login แล้ว --}}
+  @auth
 
     <div class="menu-header">การเงิน</div>
 
-    <a href="{{ route('income.index') }}" class="{{ request()->routeIs('income.*') ? 'active' : '' }}">
+    <a href="{{ route('income.index') }}"
+       class="{{ request()->routeIs('income.*') ? 'active' : '' }}">
       <i class="fas fa-arrow-down"></i> <span>รายรับ</span>
     </a>
 
-    <a href="{{ route('expense.index') }}" class="{{ request()->routeIs('expense.*') ? 'active' : '' }}">
+    <a href="{{ route('expense.index') }}"
+       class="{{ request()->routeIs('expense.*') ? 'active' : '' }}">
       <i class="fas fa-arrow-up"></i> <span>รายจ่าย</span>
     </a>
 
-    <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.*') ? 'active' : '' }}">
+    <a href="{{ route('invoice.index') }}"
+       class="{{ request()->routeIs('invoice.*') ? 'active' : '' }}">
       <i class="fas fa-file-invoice"></i> <span>ใบแจ้งหนี้</span>
     </a>
 
-    <a href="{{ route('payment.index') }}" class="{{ request()->routeIs('payment.*') ? 'active' : '' }}">
+    <a href="{{ route('payment.index') }}"
+       class="{{ request()->routeIs('payment.*') ? 'active' : '' }}">
       <i class="fas fa-money-bill"></i> <span>รับชำระเงิน</span>
     </a>
 
     <div class="menu-header">ระบบบัญชี</div>
 
-    <a href="{{ route('accounts.index') }}" class="{{ request()->routeIs('accounts.*') ? 'active' : '' }}">
+    <a href="{{ route('accounts.index') }}"
+       class="{{ request()->routeIs('accounts.*') ? 'active' : '' }}">
       <i class="fas fa-book"></i> <span>ผังบัญชี</span>
     </a>
 
-    <a href="{{ route('journals.index') }}" class="{{ request()->routeIs('journals.*') ? 'active' : '' }}">
+    <a href="{{ route('journals.index') }}"
+       class="{{ request()->routeIs('journals.*') ? 'active' : '' }}">
       <i class="fas fa-clipboard-list"></i> <span>สมุดรายวัน</span>
     </a>
+
+
 
     <form method="POST" action="{{ route('logout') }}" class="p-3 mt-4">
       @csrf
@@ -199,7 +212,9 @@
         <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
       </button>
     </form>
-  </div>
+
+  @endauth
+</div>
 
   <!-- Navbar -->
   <div class="top-navbar">
