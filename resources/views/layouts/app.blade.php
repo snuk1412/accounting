@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="UTF-8">
   <title>@yield('title')</title>
@@ -32,8 +31,9 @@
       min-height: 100vh;
       position: fixed;
       color: #fff;
-      transition: .3s;
+      transition: width .3s;
       z-index: 1001;
+      overflow-x: hidden;
     }
 
     .sidebar.collapsed {
@@ -71,7 +71,8 @@
       color: #fff;
     }
 
-    .sidebar.collapsed a span {
+    .sidebar.collapsed a span,
+    .sidebar.collapsed h4 span {
       display: none;
     }
 
@@ -93,7 +94,7 @@
       justify-content: space-between;
       padding: 0 25px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, .05);
-      transition: .3s;
+      transition: margin-left .3s;
       position: sticky;
       top: 0;
       z-index: 1000;
@@ -104,7 +105,7 @@
       color: #fff;
     }
 
-    .sidebar.collapsed+.top-navbar {
+    .sidebar.collapsed ~ .top-navbar {
       margin-left: 70px;
     }
 
@@ -113,10 +114,10 @@
       margin-left: 230px;
       padding: 30px;
       flex: 1;
-      transition: .3s;
+      transition: margin-left .3s;
     }
 
-    .sidebar.collapsed~.content {
+    .sidebar.collapsed ~ .content {
       margin-left: 70px;
     }
 
@@ -130,7 +131,7 @@
       justify-content: space-between;
       align-items: center;
       font-size: 14px;
-      transition: .3s;
+      transition: margin-left .3s;
     }
 
     body.dark-mode .footer {
@@ -139,7 +140,7 @@
       color: #cbd5e1;
     }
 
-    .sidebar.collapsed~.footer {
+    .sidebar.collapsed ~ .footer {
       margin-left: 70px;
     }
 
@@ -157,54 +158,44 @@
 
 <body>
 
-  <!-- Sidebar -->
+<!-- Sidebar -->
 <div class="sidebar">
   <h4>💼 <span>ระบบบัญชี</span></h4>
 
-  {{-- เห็นได้ทุกคน --}}
   <a href="{{ route('dashboard') }}"
      class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
     <i class="fas fa-chart-line"></i> <span>Dashboard</span>
   </a>
 
-  {{-- แสดงเมนูเฉพาะตอน Login แล้ว --}}
   @auth
 
     <div class="menu-header">การเงิน</div>
 
-    <a href="{{ route('income.index') }}"
-       class="{{ request()->routeIs('income.*') ? 'active' : '' }}">
+    <a href="{{ route('income.index') }}" class="{{ request()->routeIs('income.*') ? 'active' : '' }}">
       <i class="fas fa-arrow-down"></i> <span>รายรับ</span>
     </a>
 
-    <a href="{{ route('expense.index') }}"
-       class="{{ request()->routeIs('expense.*') ? 'active' : '' }}">
+    <a href="{{ route('expense.index') }}" class="{{ request()->routeIs('expense.*') ? 'active' : '' }}">
       <i class="fas fa-arrow-up"></i> <span>รายจ่าย</span>
     </a>
 
-    <a href="{{ route('invoice.index') }}"
-       class="{{ request()->routeIs('invoice.*') ? 'active' : '' }}">
+    <a href="{{ route('invoice.index') }}" class="{{ request()->routeIs('invoice.*') ? 'active' : '' }}">
       <i class="fas fa-file-invoice"></i> <span>ใบแจ้งหนี้</span>
     </a>
 
-    <a href="{{ route('payment.index') }}"
-       class="{{ request()->routeIs('payment.*') ? 'active' : '' }}">
+    <a href="{{ route('payment.index') }}" class="{{ request()->routeIs('payment.*') ? 'active' : '' }}">
       <i class="fas fa-money-bill"></i> <span>รับชำระเงิน</span>
     </a>
 
     <div class="menu-header">ระบบบัญชี</div>
 
-    <a href="{{ route('accounts.index') }}"
-       class="{{ request()->routeIs('accounts.*') ? 'active' : '' }}">
+    <a href="{{ route('accounts.index') }}" class="{{ request()->routeIs('accounts.*') ? 'active' : '' }}">
       <i class="fas fa-book"></i> <span>ผังบัญชี</span>
     </a>
 
-    <a href="{{ route('journals.index') }}"
-       class="{{ request()->routeIs('journals.*') ? 'active' : '' }}">
+    <a href="{{ route('journals.index') }}" class="{{ request()->routeIs('journals.*') ? 'active' : '' }}">
       <i class="fas fa-clipboard-list"></i> <span>สมุดรายวัน</span>
     </a>
-
-
 
     <form method="POST" action="{{ route('logout') }}" class="p-3 mt-4">
       @csrf
@@ -213,80 +204,80 @@
       </button>
     </form>
 
+
   @endauth
 </div>
 
-  <!-- Navbar -->
-  <div class="top-navbar">
-    <div>
-      <i class="fas fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
-      <strong class="ml-3">@yield('title')</strong>
-    </div>
+<!-- Navbar -->
+<div class="top-navbar">
+  <div>
+    <i class="fas fa-bars sidebar-toggle" onclick="toggleSidebar()"></i>
+    <strong class="ml-3">@yield('title')</strong>
+  </div>
 
-    <div>
-      <button onclick="toggleDark()" class="btn btn-sm btn-light mr-3">
-        <i class="fas fa-moon"></i>
-      </button>
+  <div>
+    <button onclick="toggleDark()" class="btn btn-sm btn-light mr-3">
+      <i class="fas fa-moon"></i>
+    </button>
 
+    @auth
       <i class="fas fa-user-circle"></i>
-      {{ auth()->user()->name ?? 'User' }}
-    </div>
+      {{ auth()->user()->name }}
+    @endauth
   </div>
+</div>
 
-  <!-- Content -->
-  <div class="content">
-    @yield('content')
+<!-- Content -->
+<div class="content">
+  @yield('content')
+</div>
+
+<!-- Footer -->
+<div class="footer">
+  <div>
+    © {{ date('Y') }} Accounting System
   </div>
-
-  <!-- Footer -->
-  <div class="footer">
-    <div>
-      © {{ date('Y') }} Accounting System
-    </div>
-
-    <div>
-      Version 1.0 | Laravel
-    </div>
+  <div>
+    Version 1.0 | Laravel
   </div>
+</div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-  <script>
-    function toggleSidebar() {
-      document.querySelector('.sidebar').classList.toggle('collapsed');
-    }
+<script>
+  function toggleSidebar() {
+    document.querySelector('.sidebar').classList.toggle('collapsed');
+  }
 
-    function toggleDark() {
-      document.body.classList.toggle('dark-mode');
-      localStorage.setItem('darkMode',
-        document.body.classList.contains('dark-mode'));
-    }
+  function toggleDark() {
+    document.body.classList.toggle('dark-mode');
+    localStorage.setItem('darkMode',
+      document.body.classList.contains('dark-mode'));
+  }
 
-    if (localStorage.getItem('darkMode') === 'true') {
-      document.body.classList.add('dark-mode');
-    }
-  </script>
+  if (localStorage.getItem('darkMode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
+</script>
 
-  @if (session('success'))
-    <script>
-      document.addEventListener('DOMContentLoaded', function() {
-        const Toast = Swal.mixin({
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 2500,
-          timerProgressBar: true
-        });
+@if (session('success'))
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 2500,
+    timerProgressBar: true
+  });
 
-        Toast.fire({
-          icon: 'success',
-          title: '{{ session('success') }}'
-        });
-      });
-    </script>
-  @endif
+  Toast.fire({
+    icon: 'success',
+    title: '{{ session('success') }}'
+  });
+});
+</script>
+@endif
 
 </body>
-
 </html>
