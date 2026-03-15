@@ -11,18 +11,25 @@ class CreateUsersTable extends Migration
      *
      * @return void
      */
-    public function up()
-    {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
-        });
-    }
+   public function up()
+{
+    Schema::create('users', function (Blueprint $table) {
+        $table->id();
+        $table->string('name');
+        $table->string('email')->unique();
+        $table->timestamp('email_verified_at')->nullable();
+        $table->string('password');
+
+        // เปิด/ปิดการใช้งาน
+        $table->boolean('enabled')->default(true);
+
+        // ถ้าระบบบัญชีมีสิทธิ์
+        $table->enum('role', ['admin', 'user'])->default('user');
+
+        $table->rememberToken();
+        $table->timestamps();
+    });
+}
 
     /**
      * Reverse the migrations.

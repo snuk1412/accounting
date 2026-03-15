@@ -96,9 +96,27 @@
             ])
           @endforeach
         </tbody>
+
       </table>
+<div class="mt-4">
+    {{ $accounts->links('pagination::bootstrap-4') }}
+</div>
     </div>
   </div>
+<<<<<<< HEAD
 
+=======
+  <script>
+    function toggleDark() {
+      document.body.classList.toggle('dark-mode');
+      localStorage.setItem('darkMode',
+        document.body.classList.contains('dark-mode'));
+    }
+
+    if (localStorage.getItem('darkMode') === 'true') {
+      document.body.classList.add('dark-mode');
+    }
+  </script>
+>>>>>>> 997abbf04cbff53ab44c8290e18d692e6d975bed
 
 @endsection
