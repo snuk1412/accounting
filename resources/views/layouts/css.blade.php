@@ -31,6 +31,16 @@
     color: #f1f5f9;
   }
 
+  .submenu{
+padding-left:40px;
+font-size: 16px;
+display:block;
+}
+
+.submenu i{
+margin-right:8px;
+}
+
   /* SIDEBAR */
 
   .sidebar {

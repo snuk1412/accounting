@@ -33,6 +33,26 @@
 
         </div>
 
+<div class="mb-3">
+
+<label>หมวดหมู่</label>
+
+<select name="category_id" class="form-control">
+
+<option value="">-- เลือกหมวดหมู่ --</option>
+
+@if(!empty($accounts))
+@foreach($accounts as $account)
+<option value="{{ $account->id }}">
+{{ $account->name }}
+</option>
+@endforeach
+@endif
+
+</select>
+
+</div>
+
         <div class="mb-3">
 
           <label>จำนวนเงิน</label>
@@ -63,7 +83,6 @@
 
         </div>
 
-        <input type="hidden" name="category_id" value="2">
 
         <button id="submitBtn" class="btn btn-primary">
           บันทึกข้อมูล

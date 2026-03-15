@@ -5,7 +5,7 @@
   <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}">
     <i class="fas fa-chart-line"></i> <span>Dashboard</span>
   </a>
-
+@auth
   <div class="menu-header">การเงิน</div>
 
   <a href="{{ route('income.index') }}" class="{{ request()->routeIs('income.*') ? 'active' : '' }}">
@@ -75,5 +75,5 @@
   <a href="{{ route('settings.index') }}" class="{{ request()->routeIs('settings.*') ? 'active' : '' }}">
     <i class="fas fa-cog"></i> <span>ตั้งค่าระบบ</span>
   </a>
-
+@endauth
 </div>

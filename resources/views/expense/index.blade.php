@@ -38,9 +38,10 @@
           <thead style="background:#f8fafc;">
             <tr>
               <th class="pl-4">วันที่</th>
+              <th class="pl-4">รายละเอียด</th>
               <th>หมวดหมู่</th>
               <th>จำนวนเงิน</th>
-              <th>รายละเอียด</th>
+
               <th class="text-center pr-4" width="150">จัดการ</th>
             </tr>
           </thead>
@@ -50,7 +51,9 @@
                 <td class="pl-4 align-middle">
                   {{ \Carbon\Carbon::parse($row->date)->format('d/m/Y') }}
                 </td>
-
+  <td class="align-middle text-muted">
+                  {{ $row->description }}
+                </td>
                 <td class="align-middle">
                   <span class="badge badge-light px-3 py-2">
                     {{ $row->category->name ?? '-' }}
@@ -61,23 +64,22 @@
                   ฿ {{ number_format($row->amount, 2) }}
                 </td>
 
-                <td class="align-middle text-muted">
-                  {{ $row->description }}
-                </td>
+
 
                 <td class="align-middle text-nowrap text-center pr-4">
 
                   <a href="{{ route('expense.edit', $row->id) }}" class="btn btn-sm btn-outline-warning mr-1">
                     แก้ไข
                   </a>
-
-                  <form action="{{ route('expense.destroy', $row->id) }}" method="POST" style="display:inline;" onsubmit="confirmDelete(this)">
+ <form method="POST" action="{{ route('expense.destroy', $row->id) }}" style="display:inline;" class="delete-form">
                     @csrf
                     @method('DELETE')
-                    <button class="btn btn-sm btn-outline-danger">
+
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-modern btn-delete">
                       ลบ
                     </button>
                   </form>
+           
 
                 </td>
               </tr>
@@ -95,3 +97,33 @@
   </div>
 
 @endsection
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+
+    const deleteButtons = document.querySelectorAll('.btn-delete');
+
+    deleteButtons.forEach(button => {
+      button.addEventListener('click', function() {
+
+        const form = this.closest('form');
+
+        Swal.fire({
+          title: 'ยืนยันการลบ?',
+          text: "ข้อมูลนี้จะไม่สามารถกู้คืนได้",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#ef4444',
+          cancelButtonColor: '#6b7280',
+          confirmButtonText: 'ลบเลย',
+          cancelButtonText: 'ยกเลิก'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit();
+          }
+        });
+
+      });
+    });
+
+  });
+</script>

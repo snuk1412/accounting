@@ -42,6 +42,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('users', UserController::class);
     Route::resource('settings', SettingController::class);
 
+//ลูกค้า
+Route::resource('customers', CustomerController::class);
+
+
+
+
     // รายงาน
     Route::prefix('reports')->name('reports.')->group(function () {
 
@@ -55,6 +61,6 @@ Route::middleware(['auth'])->group(function () {
 
     });
 
-    
+
 
 });

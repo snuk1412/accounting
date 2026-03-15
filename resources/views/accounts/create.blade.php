@@ -1,83 +1,138 @@
-```blade
-@extends('layouts.app')
-@section('title', 'เพิ่มผู้ใช้งาน')
 
+@extends('layouts.app')
+
+@section('title', 'แก้ไขผังบัญชี')
 @section('content')
 
-  <div class="container py-4">
+  <style>
+    .glass-card {
+      backdrop-filter: blur(14px);
+      background: rgba(255, 255, 255, 0.75);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: .3s;
+    }
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    body.dark-mode .glass-card {
+      background: rgba(30, 41, 59, 0.7);
+      color: #f1f5f9;
+    }
 
-      <div>
-        <h4 class="fw-bold mb-0">👤 เพิ่มผู้ใช้งาน</h4>
-        <small class="text-muted">Create User</small>
-      </div>
+    .btn-modern {
+      border-radius: 50px;
+      padding: 8px 28px;
+      border: none;
+      transition: .3s;
+    }
 
-      <a href="{{ route('users.index') }}" class="btn btn-secondary">
-        กลับ
-      </a>
+    .btn-save {
+      background: linear-gradient(90deg, #16a34a, #22c55e);
+      color: #fff;
+    }
 
-    </div>
+    .btn-cancel {
+      background: #64748b;
+      color: #fff;
+    }
+  </style>
+<div class="container py-4">
 
-    <div class="glass-card p-4">
+<h4 class="fw-bold mb-4">➕ เพิ่มผังบัญชี</h4>
 
-      <form action="{{ route('users.store') }}" method="POST">
-        @csrf
+<div class="glass-card p-4">
 
-        <div class="mb-3">
-          <label class="form-label">ชื่อผู้ใช้งาน</label>
+<form action="{{ route('accounts.store') }}" method="POST" onsubmit="disableBtn()">
+@csrf
 
-          <input type="text" name="name" value="{{ old('name') }}" class="form-control @error('name') is-invalid @enderror" required>
+<div class="mb-3">
+<label>รหัสบัญชี</label>
 
-          @error('name')
-            <small class="text-danger">
-              {{ $message }}
-            </small>
-          @enderror
-        </div>
+<input type="text"
+name="code"
+id="code"
+class="form-control @error('code') is-invalid @enderror"
+value="{{ old('code') }}"
+required>
 
-        <div class="mb-3">
-          <label class="form-label">Email</label>
+@error('code')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
+</div>
 
-          <input type="email" name="email" value="{{ old('email') }}" class="form-control @error('email') is-invalid @enderror" required>
 
-          @error('email')
-            <small class="text-danger">
-              {{ $message }}
-            </small>
-          @enderror
-        </div>
+<div class="mb-3">
+<label>ชื่อบัญชี</label>
 
-        <div class="mb-4">
-          <label class="form-label">Password</label>
+<input type="text"
+name="name"
+class="form-control @error('name') is-invalid @enderror"
+value="{{ old('name') }}"
+required>
 
-          <input type="password" name="password" class="form-control @error('password') is-invalid @enderror" required>
+@error('name')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
+</div>
 
-          @error('password')
-            <small class="text-danger">
-              {{ $message }}
-            </small>
-          @enderror
-        </div>
 
-        <div class="text-end">
-          <button id="submitBtn" class="btn btn-modern">
-            บันทึกข้อมูล
-          </button>
-        </div>
+<div class="mb-3">
+<label>ประเภทบัญชี</label>
 
-      </form>
+<select name="type"
+class="form-control @error('type') is-invalid @enderror"
+required>
 
-    </div>
+<option value="">-- เลือกประเภทบัญชี --</option>
 
-  </div>
+<option value="asset" {{ old('type') == 'asset' ? 'selected' : '' }}>
+สินทรัพย์
+</option>
 
-  <script>
-    // ป้องกัน submit ซ้ำ
-    document.querySelector("form").addEventListener("submit", function() {
-      document.getElementById("submitBtn").disabled = true;
-    })
-  </script>
+<option value="liability" {{ old('type') == 'liability' ? 'selected' : '' }}>
+หนี้สิน
+</option>
+
+<option value="equity" {{ old('type') == 'equity' ? 'selected' : '' }}>
+ทุน
+</option>
+
+<option value="income" {{ old('type') == 'income' ? 'selected' : '' }}>
+รายได้
+</option>
+
+<option value="expense" {{ old('type') == 'expense' ? 'selected' : '' }}>
+ค่าใช้จ่าย
+</option>
+
+</select>
+
+@error('type')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
+</div>
+
+
+<div class="mt-4">
+
+<button id="submitBtn" class="btn btn-modern btn-save">
+<i class="fas fa-save"></i> บันทึก
+</button>
+
+<a href="{{ route('accounts.index') }}" class="btn btn-modern btn-cancel">
+ยกเลิก
+</a>
+
+</div>
+
+</form>
+
+</div>
+</div>
 
 @endsection
-```
