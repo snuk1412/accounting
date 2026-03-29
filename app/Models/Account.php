@@ -37,4 +37,5 @@ class Account extends Model
 
         return $credit - $debit;
     }
+
 }
