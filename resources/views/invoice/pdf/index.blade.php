@@ -4,45 +4,18 @@
 <meta charset="UTF-8">
 <title>ใบเสนอราคา</title>
 
+<!-- ดึงฟอนต์ Sarabun จาก Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
 <style>
 @page {
   size: A4;
   margin: 20px;
 }
 
-/* ===== FONT THAI ===== */
-/* ===== FONT THAI THSarabunNew ===== */
-@font-face {
-  font-family: 'THSarabunNew';
-  src: url("{{ storage_path('fonts/THSarabunNew.ttf') }}") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'THSarabunNew';
-  src: url("{{ storage_path('fonts/THSarabunNew-Bold.ttf') }}") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'THSarabunNew';
-  src: url("{{ storage_path('fonts/THSarabunNew-Italic.ttf') }}") format("truetype");
-  font-weight: 400;
-  font-style: italic;
-}
-
-@font-face {
-  font-family: 'THSarabunNew';
-  src: url("{{ storage_path('fonts/THSarabunNew-BoldItalic.ttf') }}") format("truetype");
-  font-weight: 700;
-  font-style: italic;
-}
-
 /* ===== BODY DEFAULT ===== */
 body {
-  font-family: 'THSarabunNew', sans-serif;
+  font-family: 'Sarabun', sans-serif;
   font-size: 20px; /* ปรับตามความเหมาะสม 18-20px */
   line-height: 1.5;
   color: #000;
@@ -52,7 +25,7 @@ body {
 
 /* ลบ font-family ในจุดย่อยอื่นๆ ออกเพื่อให้ใช้ค่าจาก body ทั้งหมด */
 table, th, td, div {
-  font-family: 'THSarabunNew', sans-serif;
+  font-family: 'Sarabun', sans-serif;
 }
 
 /* ===== LAYOUT ===== */
