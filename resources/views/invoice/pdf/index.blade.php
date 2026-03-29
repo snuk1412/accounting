@@ -11,23 +11,43 @@
 }
 
 /* ===== FONT THAI ===== */
+/* ===== FONT THAI THSarabunNew ===== */
 @font-face {
   font-family: 'THSarabunNew';
-  src: url("{{ public_path('fonts/THSarabunNew.ttf') }}") format("truetype");
-  font-weight: normal;
-  font-style: normal;
-}
-@font-face {
-  font-family: 'THSarabunNew';
-  src: url("{{ public_path('fonts/THSarabunNew-Bold.ttf') }}") format("truetype");
-  font-weight: bold;
+  src: url("{{ storage_path('fonts/THSarabunNew.ttf') }}") format("truetype");
+  font-weight: 400;
   font-style: normal;
 }
 
+@font-face {
+  font-family: 'THSarabunNew';
+  src: url("{{ storage_path('fonts/THSarabunNew-Bold.ttf') }}") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'THSarabunNew';
+  src: url("{{ storage_path('fonts/THSarabunNew-Italic.ttf') }}") format("truetype");
+  font-weight: 400;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'THSarabunNew';
+  src: url("{{ storage_path('fonts/THSarabunNew-BoldItalic.ttf') }}") format("truetype");
+  font-weight: 700;
+  font-style: italic;
+}
+
+/* ===== BODY DEFAULT ===== */
 body {
   font-family: 'THSarabunNew', sans-serif;
-  font-size: 20px; /* Sarabun มักจะตัวเล็กกว่าปกติ แนะนำให้ปรับเป็น 18-20px */
-  line-height: 1.2;
+  font-size: 20px; /* ปรับตามความเหมาะสม 18-20px */
+  line-height: 1.5;
+  color: #000;
+  margin: 0;
+  padding: 0;
 }
 
 /* ลบ font-family ในจุดย่อยอื่นๆ ออกเพื่อให้ใช้ค่าจาก body ทั้งหมด */
