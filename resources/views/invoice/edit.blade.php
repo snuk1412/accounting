@@ -73,36 +73,29 @@
 
         <div class="row">
 
-       <div class="col-md-6 mb-3">
-    <label>สถานะ</label>
- <select id="status" name="status" class="form-control"
-    @if($invoice->balance <= 0) disabled @endif>
-    <option value="0" {{ old('status', $invoice->status) == 0 && $invoice->balance > 0 ? 'selected' : '' }}>
-        ยังไม่ชำระ
-    </option>
-    <option value="1" {{ old('status', $invoice->status) == 1 || $invoice->balance <= 0 ? 'selected' : '' }}>
-        ชำระแล้ว
-    </option>
-</select>
+          {{-- <div class="col-md-6 mb-3">
+            <label>สถานะ</label>
+            <select id="status" name="status" class="form-control" @if ($invoice->balance <= 0) disabled @endif>
+              <option value="0" {{ old('status', $invoice->status) == 0 && $invoice->balance > 0 ? 'selected' : '' }}>
+                ยังไม่ชำระ
+              </option>
+              <option value="1" {{ old('status', $invoice->status) == 1 || $invoice->balance <= 0 ? 'selected' : '' }}>
+                ชำระแล้ว
+              </option>
+            </select>
 
-      @if($invoice->balance <= 0)
-        <div class="text-success mt-2 fw-bold">
-            ใบแจ้งหนี้นี้ชำระครบแล้ว ✅
-        </div>
-      @endif
-</div>
-          <div class="col-md-6 mb-3" id="paid_box">
+            @if ($invoice->balance <= 0)
+              <div class="text-success mt-2 fw-bold">
+                ใบแจ้งหนี้นี้ชำระครบแล้ว ✅
+              </div>
+            @endif
+          </div> --}}
+          {{-- <div class="col-md-6 mb-3" id="paid_box">
 
             <label>ชำระแล้ว</label>
 
-<input
-  type="text"
-  name="paid"
-  class="form-control"
-  value="{{ old('paid', number_format($invoice->paid, 2)) }}"
-  {{ $invoice->paid >= $invoice->total ? 'disabled' : '' }}
->
-          </div>
+            <input type="text" name="paid" class="form-control" value="{{ old('paid', number_format($invoice->paid, 2)) }}" {{ $invoice->paid >= $invoice->total ? 'disabled' : '' }}>
+          </div> --}}
 
         </div>
 
@@ -175,10 +168,15 @@
         </div>
 
 
-        <button class="btn btn-primary mt-3">
-          อัปเดตข้อมูล
-        </button>
+        <div class="d-flex justify-content-end">
+          <button type="button" class="btn btn-info mt-3" onclick="window.open('{{ route('invoice.pdf', $invoice->id) }}', '_blank')">
+            ดาวน์โหลด PDF
+          </button>
 
+          <button class="btn btn-primary mt-3 ml-2" type="submit">
+            อัปเดตข้อมูล
+          </button>
+        </div>
       </form>
 
     </div>
@@ -187,61 +185,83 @@
     <h4 class="fw-bold mt-4">🧾 ประวัติการชำระเงิน</h4>
 
     <div class="glass-card p-4 mt-4">
-@php
-  $totalPaid = $invoice->payments->sum('amount');
-  $isPaidFull = $totalPaid >= ($invoice->total ?? 0);
-@endphp
-      <!-- ปุ่มเรียก Modal -->
-<button class="btn btn-success my-3"
-        data-toggle="modal"
-        data-target="#paymentModal"
-        @if($isPaidFull) disabled @endif>
-  เพิ่มประวัติการชำระเงิน
-</button>
+
+      @php
+        $invoiceTotal = $invoice->total ?? 0;
+        $runningPaid = 0;
+        $no = 1;
+
+        $totalPaidAll = $invoice->payments->sum('amount');
+        $isPaidFull = $totalPaidAll >= $invoiceTotal;
+      @endphp
+
+      @if (!$isPaidFull)
+        <button class="btn btn-success my-3" data-toggle="modal" data-target="#paymentModal">
+          เพิ่มประวัติการชำระเงิน
+        </button>
+      @endif
 
       <table class="table table-bordered mb-0">
 
         <thead>
-          <tr>
+          <tr class="text-center">
             <th>#</th>
             <th>วันที่ชำระ</th>
-            <th>จำนวนเงิน</th>
-            <th>หมายเหตุ</th>
+            <th>จำนวณเงิน</th>
+            <th>จำนวนเงินที่ชำระ</th>
+            <th>คงเหลือ</th>
+            <th>สถานะการชำระ</th>
+            <th>การจัดการ</th>
           </tr>
         </thead>
 
         <tbody>
-          @php
-            $totalPaid = 0;
-            $no = 1; // เริ่มนับลำดับ
-          @endphp
-
-          @forelse($invoice->payments ?? [] as $payment)
+          @foreach ($invoice->payments ?? [] as $payment)
             @php
-              $totalPaid += $payment->amount;
+              $beforePaid = $invoiceTotal - $runningPaid; // 🔥 ยอดที่ต้องชำระ (ก่อนจ่าย)
+              $runningPaid += $payment->amount;
+              $remaining = $invoiceTotal - $runningPaid;
             @endphp
-            <tr>
-              <td>{{ $no++ }}</td> {{-- ลำดับ --}}
+
+            <tr class="text-center">
+              <td>{{ $no++ }}</td>
+
               <td>{{ date('d/m/Y', strtotime($payment->payment_date)) }}</td>
-              <td>฿ {{ number_format($payment->amount, 2) }}</td>
-              <td>{{ $payment->note }}</td>
-            </tr>
-          @empty
-            <tr>
-              <td colspan="4" class="text-center">ยังไม่มีประวัติการชำระเงิน</td>
-            </tr>
-          @endforelse
-        </tbody>
 
-        @if ($totalPaid > 0)
-          <tfoot>
-            <tr>
-              <th colspan="2" class="text-end">รวมทั้งหมด</th>
-              <th colspan="2">฿ {{ number_format($totalPaid, 2) }}</th>
-            </tr>
-          </tfoot>
-        @endif
+              <!-- 🔥 ยอดที่ต้องชำระ -->
+              <td>
+                ฿ {{ number_format(max($beforePaid, 0), 2) }}
+              </td>
 
+              <!-- จ่าย -->
+              <td class="text-danger">
+                ฿ {{ number_format($payment->amount, 2) }}
+              </td>
+
+              <!-- คงเหลือ -->
+              <td class="{{ $remaining <= 0 ? 'text-success' : 'text-warning' }}">
+                ฿ {{ number_format(max($remaining, 0), 2) }}
+              </td>
+
+              <!-- สถานะ -->
+              <td>
+                @if ($remaining <= 0)
+                  <span class="badge badge-success">ชำระครบแล้ว</span>
+                @else
+                  <span class="badge badge-warning">ยังไม่ครบ</span>
+                @endif
+              </td>
+
+              <!-- ลบ -->
+              <td>
+                <form action="{{ route('payment.destroy', [$invoice->id, $payment->id]) }}" method="POST" onsubmit="return confirm('คุณแน่ใจหรือไม่ว่าต้องการลบประวัติการชำระเงินนี้?');">
+                  @csrf
+                  @method('DELETE')
+                  <button type="submit" class="btn btn-danger btn-sm">ลบ</button>
+                </form>
+              </td>
+            </tr>
+          @endforeach
 
       </table>
     </div>
@@ -267,8 +287,7 @@
             <!-- วันที่ชำระ -->
             <div class="form-group">
               <label>วันที่ชำระ</label>
-              <input type="date" name="payment_date" class="form-control @error('payment_date') is-invalid @enderror" value="{{ old('payment_date') }}" placeholder="เลือกวันที่ชำระ" required>
-              @error('payment_date')
+              <input type="date" name="payment_date" id="payment_date" class="form-control @error('payment_date') is-invalid @enderror" value="{{ old('payment_date', now()->format('Y-m-d')) }}" required> @error('payment_date')
                 <div class="invalid-feedback">{{ $message }}</div>
               @enderror
             </div>
@@ -351,11 +370,9 @@
     }
 
     document.addEventListener('input', function(e) {
-
       if (e.target.classList.contains('qty') || e.target.classList.contains('price')) {
         calculate();
       }
-
     });
 
     function calculate() {
@@ -386,22 +403,25 @@
 
     }
 
+    // 🔥 FIX: กัน error ถ้าไม่มี status
     function togglePaid() {
-
-      let status = document.getElementById('status').value;
+      let statusEl = document.getElementById('status');
       let box = document.getElementById('paid_box');
 
-      if (status == 1) {
+      if (!statusEl || !box) return;
+
+      if (statusEl.value == 1) {
         box.style.display = 'block';
       } else {
         box.style.display = 'none';
       }
-
     }
 
-    document.getElementById('status').addEventListener('change', togglePaid);
-
-    togglePaid();
+    let statusEl = document.getElementById('status');
+    if (statusEl) {
+      statusEl.addEventListener('change', togglePaid);
+      togglePaid();
+    }
 
     function numberToThaiText(num) {
 
@@ -442,30 +462,36 @@
       calculate();
     };
   </script>
+
   <script>
-    // ป้องกันการกรอกเกินใน modal
+    // 🔥 FIX: ใช้ยอดคงเหลือจริง
     const paymentInput = document.querySelector('input[name="amount"]');
-    const grandTotal = {{ $invoice->total ?? 0 }}; // หรือยอดคงค้าง
 
-    paymentInput.addEventListener('input', function() {
-      let value = parseFloat(this.value) || 0;
+    const remainingBalance = {{ max(($invoice->total ?? 0) - ($invoice->payments->sum('amount') ?? 0), 0) }};
 
-      if (value > grandTotal) {
-        this.value = grandTotal.toFixed(2);
-        alert('จำนวนเงินที่ชำระไม่สามารถเกินยอดรวมของใบแจ้งหนี้ได้');
+    if (paymentInput) {
+
+      paymentInput.addEventListener('input', function() {
+        let value = parseFloat(this.value) || 0;
+
+        if (value > remainingBalance) {
+          this.value = remainingBalance.toFixed(2);
+          alert('จำนวนเงินที่ชำระไม่สามารถเกินยอดคงเหลือได้');
+        }
+      });
+
+      const paymentForm = document.querySelector('#paymentModal form');
+
+      if (paymentForm) {
+        paymentForm.addEventListener('submit', function(e) {
+          let value = parseFloat(paymentInput.value) || 0;
+
+          if (value > remainingBalance) {
+            e.preventDefault();
+            alert('จำนวนเงินที่ชำระไม่สามารถเกินยอดคงเหลือได้');
+          }
+        });
       }
-    });
-
-    // ถ้าต้องการ validate ตอน submit form modal
-    const paymentForm = document.querySelector('#paymentModal form');
-    paymentForm.addEventListener('submit', function(e) {
-      let value = parseFloat(paymentInput.value) || 0;
-      if (value > grandTotal) {
-        e.preventDefault();
-        alert('จำนวนเงินที่ชำระไม่สามารถเกินยอดรวมของใบแจ้งหนี้ได้');
-      }
-    });
+    }
   </script>
-
-
 @endsection

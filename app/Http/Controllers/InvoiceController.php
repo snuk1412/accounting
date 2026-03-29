@@ -6,6 +6,12 @@ use App\Models\Invoice;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use App\Models\Quotation;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\QuotationExport;
+use Illuminate\Validation\Rules\In;
+use App\Models\Payment;
 
 class InvoiceController extends Controller
 {
@@ -177,53 +183,68 @@ class InvoiceController extends Controller
         return back()->with('success', 'ลบข้อมูลสำเร็จ');
     }
 
-// app/Http/Controllers/InvoiceController.php
+    // app/Http/Controllers/InvoiceController.php
 
-public function storePayment(Request $request, Invoice $invoice)
-{
-    // รวมยอดจ่ายปัจจุบัน
-    $totalPaid = $invoice->payments()->sum('amount');
+    public function storePayment(Request $request, Invoice $invoice)
+    {
+        // รวมยอดจ่ายปัจจุบัน
+        $totalPaid = $invoice->payments()->sum('amount');
 
-    // กันจ่ายเกิน
-    $remaining = $invoice->total - $totalPaid;
-    if ($request->amount > $remaining) {
-        return back()->with('error', 'จำนวนเงินเกินยอดคงเหลือ');
+        // กันจ่ายเกิน
+        $remaining = $invoice->total - $totalPaid;
+        if ($request->amount > $remaining) {
+            return back()->with('error', 'จำนวนเงินเกินยอดคงเหลือ');
+        }
+
+        // Validate
+        $request->validate([
+            'payment_date' => 'required|date',
+            'amount' => 'required|numeric|min:0.01',
+            'note' => 'nullable|string',
+        ]);
+
+        // สร้าง payment
+        $invoice->payments()->create([
+            'payment_date' => $request->payment_date,
+            'amount' => $request->amount,
+            'note' => $request->note,
+        ]);
+
+        // อัปเดตยอด invoice
+        $invoice->paid = $invoice->payments()->sum('amount');
+        $invoice->balance = $invoice->total - $invoice->paid;
+        $invoice->status = $invoice->balance <= 0 ? 1 : ($invoice->due_date < now() ? 2 : 0);
+        $invoice->save();
+
+        return back()->with('success', 'เพิ่มประวัติการชำระเงินเรียบร้อยแล้ว');
     }
 
-    // Validate
-    $request->validate([
-        'payment_date' => 'required|date',
-        'amount' => 'required|numeric|min:0.01',
-        'note' => 'nullable|string',
-    ]);
+    public function deletePayment(Payment $payment)
+    {
+        $invoice = $payment->invoice;
+        $payment->delete();
 
-    // สร้าง payment
-    $invoice->payments()->create([
-        'payment_date' => $request->payment_date,
-        'amount' => $request->amount,
-        'note' => $request->note,
-    ]);
+        // อัปเดตยอด invoice
+        $invoice->paid = $invoice->payments()->sum('amount');
+        $invoice->balance = $invoice->total - $invoice->paid;
+        $invoice->status = $invoice->balance <= 0 ? 1 : ($invoice->due_date < now() ? 2 : 0);
+        $invoice->save();
 
-    // อัปเดตยอด invoice
-    $invoice->paid = $invoice->payments()->sum('amount');
-    $invoice->balance = $invoice->total - $invoice->paid;
-    $invoice->status = $invoice->balance <= 0 ? 1 : ($invoice->due_date < now() ? 2 : 0);
-    $invoice->save();
+        return back()->with('success', 'ลบประวัติการชำระเงินเรียบร้อยแล้ว');
+    }
 
-    return back()->with('success', 'เพิ่มประวัติการชำระเงินเรียบร้อยแล้ว');
-}
+    public function pdf($id)
+    {
+        $invoice = Invoice::with('customer')->findOrFail($id);
 
-public function deletePayment(Payment $payment)
-{
-    $invoice = $payment->invoice;
-    $payment->delete();
+        $pdf = Pdf::loadView('invoice.pdf.index', compact('invoice'));
 
-    // อัปเดตยอด invoice
-    $invoice->paid = $invoice->payments()->sum('amount');
-    $invoice->balance = $invoice->total - $invoice->paid;
-    $invoice->status = $invoice->balance <= 0 ? 1 : ($invoice->due_date < now() ? 2 : 0);
-    $invoice->save();
+        return $pdf->download('invoice_' . $invoice->invoice_no . '.pdf');
+    }
 
-    return back()->with('success', 'ลบประวัติการชำระเงินเรียบร้อยแล้ว');
-}
+    public function excel($id)
+    {
+        $quotation = Quotation::findOrFail($id);
+        return Excel::download(new QuotationExport($quotation), 'quotation.xlsx');
+    }
 }

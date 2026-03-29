@@ -10,7 +10,7 @@ use App\Models\Account;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Validation\Rules\In;
 
 class PaymentController extends Controller
 {
@@ -203,8 +203,9 @@ class PaymentController extends Controller
     }
 
     // 🔥 DELETE
-    public function destroy(Payment $payment)
+    public function destroy(Invoice $invoice, Payment $payment)
     {
+        // dd($invoice->id, $payment->id); // ตรวจสอบว่าค่าถูกส่งมาถูกต้องหรือไม่
         DB::transaction(function () use ($payment) {
 
             $invoice = $payment->invoice;
@@ -235,7 +236,11 @@ class PaymentController extends Controller
             }
         });
 
-        return redirect()->route('payment.index')
+        $invoices = Invoice::where('id', $invoice->id)->first();
+        $invoices->status = 0;
+        $invoices->save();
+
+        return redirect()->back()
             ->with('success', 'ลบรายการสำเร็จ');
     }
 }

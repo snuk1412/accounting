@@ -76,6 +76,9 @@ use Carbon\Carbon;
   </div>
   <div class="card-glass p-0">
 
+
+    {{-- <a href="{{ route('quotation.excel', $quotation->id) }}" class="btn btn-success">Excel</a> --}}
+
     <div class="table-responsive">
       <table class="table table-borderless table-modern mb-0  table-hover">
         <thead>
@@ -94,12 +97,9 @@ use Carbon\Carbon;
         <tbody>
           @forelse($data ?? [] as $row)
             @php
-              if ($row->balance <= 0) {
+              if ($row->status == 1) {
                   $status = 'ชำระครบ';
                   $color = '#10b981';
-              } elseif ($row->due_date < now()->toDateString()) {
-                  $status = 'เกินกำหนด';
-                  $color = '#ef4444';
               } else {
                   $status = 'ค้างชำระ';
                   $color = '#f59e0b';
@@ -137,8 +137,8 @@ use Carbon\Carbon;
               <td class="text-center text-nowrap">
 
                 <!-- ใบเสนอราคา -->
-                <a href="" class="btn btn-sm btn-success mr-1" data-toggle="tooltip" title="ใบเสนอราคา">
-                  <i class="fas fa-file-invoice"></i> <!-- FA Free icon -->
+                <a href="{{ route('invoice.pdf', $row->id) }}" class="btn btn-sm btn-danger mr-1" data-toggle="tooltip" title="PDF ใบแจ้งหนี้">
+                  <i class="fas fa-file-pdf"></i>
                 </a>
 
                 <!-- แก้ไข -->

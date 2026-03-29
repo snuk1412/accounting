@@ -16,6 +16,7 @@ use App\Http\Controllers\BankController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\QuotationController;
 
 Auth::routes();
 
@@ -28,7 +29,10 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('expense', ExpenseController::class);
     Route::resource('invoice', InvoiceController::class);
     Route::resource('payment', PaymentController::class);
+
     Route::post('/invoice/{invoice}/payment', [InvoiceController::class, 'storePayment'])->name('invoice.payment.store');
+    Route::delete('/invoice/{invoice}/payment/{payment}', [PaymentController::class, 'destroy'])->name('payment.destroy');
+
     // ลูกหนี้ / เจ้าหนี้
     Route::resource('customers', CustomerController::class);
     Route::resource('suppliers', SupplierController::class);
@@ -53,4 +57,9 @@ Route::middleware(['auth'])->group(function () {
 
         Route::get('cashflow', [ReportController::class, 'cashflow'])->name('cashflow');
     });
+
+    // Route::resource('quotation', QuotationController::class);
+
+    Route::get('quotation/{id}/pdf', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
+    // Route::get('quotation/{id}/excel', [InvoiceController::class, 'excel'])->name('quotation.excel');
 });

@@ -39,7 +39,7 @@
 
             <label>วันที่ครบกำหนดชำระ</label>
 
-            <input type="text" id="due_date" name="due_date" class="form-control @error('due_date') is-invalid @enderror" placeholder="เลือกวันที่" value="{{ old('due_date') }}">
+            <input type="text" id="due_date" name="due_date" class="form-control @error('due_date') is-invalid @enderror"value="{{ date('d/m/Y') }}"  placeholder="เลือกวันที่">
 
             @error('due_date')
               <div class="invalid-feedback">
