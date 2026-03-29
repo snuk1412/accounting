@@ -94,86 +94,82 @@ use Carbon\Carbon;
           </tr>
         </thead>
 
-        <tbody>
-          @forelse($data ?? [] as $row)
-       @php
-    if ($row->status >= 1) {
-        $status = 'ชำระครบ';
-    } else {
-        $status = 'ค้างชำระ';
-    }
-@endphp
+      <tbody>
 
-            <tr>
-              <td class="pl-4 font-weight-bold">
-                {{ $row->invoice_no }}
-              </td>
+@forelse($data ?? [] as $row)
 
-              <td>{{ $row->customer->name ?? 'N/A' }}</td>
+    @php
+        $total = $row->total ?? 0;
+        $paid = $row->paid ?? 0;
+        $due = \Carbon\Carbon::parse($row->due_date);
+    @endphp
 
-              <td class="text-primary font-weight-bold">
-                ฿ {{ number_format($row->total, 2) }}
-              </td>
+    <tr>
+        <td class="pl-4 font-weight-bold">
+            {{ $row->invoice_no }}
+        </td>
 
-              <td class="text-success font-weight-bold">
-                ฿ {{ number_format($row->paid, 2) }}
-              </td>
+        <td>{{ $row->customer->name ?? 'N/A' }}</td>
 
-              <td class="text-danger font-weight-bold">
-                ฿ {{ number_format($row->balance, 2) }}
-              </td>
+        <td class="text-primary font-weight-bold">
+            ฿ {{ number_format($total, 2) }}
+        </td>
 
-              <td>
-                {{ \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') }}
-              </td>
+        <td class="text-success font-weight-bold">
+            ฿ {{ number_format($paid, 2) }}
+        </td>
 
-         <td class="text-center">
-    @if($status === 'ชำระครบ')
-        <span class="badge badge-success">
-            {{ $status }}
-        </span>
-    @endif
-</td>
-              <td class="text-center text-nowrap">
+        <td class="text-danger font-weight-bold">
+            ฿ {{ number_format($row->balance, 2) }}
+        </td>
 
-                <!-- ใบเสนอราคา -->
-                <a href="{{ route('invoice.pdf', $row->id) }}" class="btn btn-sm btn-danger mr-1" data-toggle="tooltip" title="PDF ใบแจ้งหนี้">
-                  <i class="fas fa-file-pdf"></i>
-                </a>
+        <td>
+            {{ \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') }}
+        </td>
 
-                <!-- แก้ไข -->
-                <a href="{{ route('invoice.edit', $row->id) }}" class="btn btn-sm btn-warning mr-1" data-toggle="tooltip" title="แก้ไข">
-                  <i class="fas fa-pen-square"></i>
-                </a>
+        <td class="text-center">
+            @if($paid >= $total && $total > 0)
+                <span class="badge badge-success">ชำระครบ</span>
 
-                {{-- ดู (commented out) --}}
-                {{--
-  <a href="{{ route('invoice.show', $row->id) }}" class="btn btn-sm btn-info mr-1" data-toggle="tooltip" title="ดู">
-    <i class="fas fa-eye"></i>
-  </a>
-  --}}
+            @elseif($paid > 0)
+                <span class="badge badge-warning">ชำระบางส่วน</span>
 
-                <!-- ลบ -->
-                <form method="POST" action="{{ route('invoice.destroy', $row->id) }}" style="display:inline;" onsubmit="confirmDelete(this)">
-                  @csrf
-                  @method('DELETE')
-                  <button class="btn btn-sm btn-danger" data-toggle="tooltip" title="ลบ">
+            @elseif(now()->gt($due))
+                <span class="badge badge-danger">เกินกำหนด</span>
+
+            @else
+                <span class="badge badge-secondary">ค้างชำระ</span>
+            @endif
+        </td>
+
+        <td class="text-center text-nowrap">
+            <a href="{{ route('invoice.pdf', $row->id) }}" class="btn btn-sm btn-danger mr-1">
+                <i class="fas fa-file-pdf"></i>
+            </a>
+
+            <a href="{{ route('invoice.edit', $row->id) }}" class="btn btn-sm btn-warning mr-1">
+                <i class="fas fa-pen-square"></i>
+            </a>
+
+            <form method="POST" action="{{ route('invoice.destroy', $row->id) }}" style="display:inline;">
+                @csrf
+                @method('DELETE')
+                <button class="btn btn-sm btn-danger">
                     <i class="fas fa-trash"></i>
-                  </button>
-                </form>
+                </button>
+            </form>
+        </td>
+    </tr>
 
-              </td>
-            </tr>
+@empty
+    <tr>
+        <td colspan="8" class="text-center text-muted">
+            ไม่มีข้อมูลใบแจ้งหนี้
+        </td>
+    </tr>
+@endforelse
 
-          @empty
-            <tr>
-              <td colspan="8" class="text-center text-muted">
-                ไม่มีข้อมูลใบแจ้งหนี้
-              </td>
-            </tr>
-          @endforelse
-
-        </tbody>
+</tbody>
       </table>
 
 
