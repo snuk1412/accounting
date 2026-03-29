@@ -96,15 +96,13 @@ use Carbon\Carbon;
 
         <tbody>
           @forelse($data ?? [] as $row)
-            @php
-              if ($row->status == 1) {
-                  $status = 'ชำระครบ';
-                  $color = '#10b981';
-              } else {
-                  $status = 'ค้างชำระ';
-                  $color = '#f59e0b';
-              }
-            @endphp
+       @php
+    if ($row->status >= 1) {
+        $status = 'ชำระครบ';
+    } else {
+        $status = 'ค้างชำระ';
+    }
+@endphp
 
             <tr>
               <td class="pl-4 font-weight-bold">
@@ -129,11 +127,13 @@ use Carbon\Carbon;
                 {{ \Carbon\Carbon::parse($row->due_date)->format('d/m/Y') }}
               </td>
 
-              <td class="text-center">
-                <span class="badge badge-info" style="background:{{ $color }}">
-                  {{ $status }}
-                </span>
-              </td>
+         <td class="text-center">
+    @if($status === 'ชำระครบ')
+        <span class="badge badge-success">
+            {{ $status }}
+        </span>
+    @endif
+</td>
               <td class="text-center text-nowrap">
 
                 <!-- ใบเสนอราคา -->
