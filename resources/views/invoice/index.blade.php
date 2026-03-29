@@ -134,9 +134,7 @@ use Carbon\Carbon;
             @elseif($paid > 0)
                 <span class="badge badge-warning">ชำระบางส่วน</span>
 
-            @elseif(now()->gt($due))
-                <span class="badge badge-danger">เกินกำหนด</span>
-
+         
             @else
                 <span class="badge badge-secondary">ค้างชำระ</span>
             @endif
