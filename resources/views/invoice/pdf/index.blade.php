@@ -39,7 +39,10 @@ table { width: 100%; border-collapse: collapse; }
 .doc-title h2 { margin: 0; }
 
 /* ===== CUSTOMER ===== */
-.customer { margin-top: 10px; font-weight: 400; }
+
+.customer { margin-top: 1ุ5px; font-weight: 400; }
+
+
 
 /* ===== ITEM TABLE ===== */
 .item-table th {
