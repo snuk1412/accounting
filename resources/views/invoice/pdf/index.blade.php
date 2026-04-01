@@ -88,7 +88,7 @@ table {
             <table class="info-section">
                 <tr>
                     <td width="60%"><span class="bold">ชื่อลูกค้า:</span> {{ $invoice->customer->name ?? 'บจก. A จำกัด' }}</td>
-                    <td><span class="bold">วันที่:</span> {{ optional($invoice->quote_date)->format('d/m/Y') ?? '08/01/2562' }}</td>
+                    <td><span class="bold">วันที่:</span> {{ date('d/m/Y') }}</td>
                 </tr>
                 <tr>
                     <td><span class="bold">เลขที่ผู้เสียภาษี:</span> 0190901999999</td>
@@ -204,7 +204,7 @@ table {
     <td width="33%">
       <div>......................................................</div>
       <div>ผู้อำนาจลงนาม / Authorized</div>
-      <div style="font-size: 10px; margin-top: 3px;">วันที่ 08/01/2562</div>
+      <div style="font-size: 10px; margin-top: 3px;">{{ date('d/m/Y') }}</div>
     </td>
   </tr>
 </table>
