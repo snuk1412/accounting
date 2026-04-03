@@ -191,11 +191,11 @@ function baht_text($number) {
 <td>วันที่: {{ date('d/m/Y') }}</td>
 </tr>
 <tr>
-<td>เลขผู้เสียภาษี: -</td>
+<td>เลขผู้เสียภาษี: {{ $invoice->customer->tax_number ?? '-' }}</td>
 <td>เครดิต: 60 วัน</td>
 </tr>
 <tr>
-<td colspan="2" style="height:30px;">ที่อยู่: -</td>
+<td colspan="2" style="height:30px;">ที่อยู่: {{ $invoice->customer->address ?? '-' }}</td>
 </tr>
 </table>
 </td>
