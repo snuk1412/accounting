@@ -40,8 +40,7 @@
 
                 <div class="d-flex align-items-center">
 
-                  <img src="{{ asset('images/banks/' . $bank->refBank->logo) }}" width="36" class="mr-2">
-
+<img src="{{ asset('images/banks/' . optional($bank->refBank)->logo) }}" width="36">
                   <div>
                     {{ $bank->refBank->name }}
                     <small class="text-muted">

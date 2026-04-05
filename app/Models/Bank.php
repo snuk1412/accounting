@@ -15,8 +15,8 @@ class Bank extends Model
         'account_number'
     ];
 
-    public function refBank()
-    {
-        return $this->belongsTo(RefBank::class,'ref_bank_id');
-    }
+ public function refBank()
+{
+    return $this->belongsTo(RefBank::class);
+}
 }
