@@ -25,6 +25,7 @@ class CustomerController extends Controller
             'customer_code' => 'nullable|max:20',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
+            'tax_number' => 'nullable|max:20',
             'phone' => 'nullable|max:20',
             'email' => 'nullable|email|max:100',
             'address' => 'nullable'
@@ -34,6 +35,7 @@ class CustomerController extends Controller
             'customer_code' => $request->customer_code,
             'name' => $request->name,
             'company_name' => $request->company_name,
+            'tax_number' => $request->tax_number,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address
@@ -55,6 +57,7 @@ class CustomerController extends Controller
             'customer_code' => 'nullable|max:20',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
+            'tax_number' => 'nullable|max:20',
             'phone' => 'nullable|max:20',
             'email' => 'nullable|email|max:100',
             'address' => 'nullable'
@@ -66,6 +69,7 @@ class CustomerController extends Controller
             'customer_code' => $request->customer_code,
             'name' => $request->name,
             'company_name' => $request->company_name,
+            'tax_number' => $request->tax_number,
             'phone' => $request->phone,
             'email' => $request->email,
             'address' => $request->address

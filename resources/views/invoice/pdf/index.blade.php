@@ -15,22 +15,41 @@
 @font-face {
     font-family: 'Sarabun';
     src: url("{{ storage_path('fonts/Sarabun-Regular.ttf') }}") format("truetype");
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'Sarabun';
+    src: url("{{ storage_path('fonts/Sarabun-Medium.ttf') }}") format("truetype");
+    font-weight: 500;
 }
 @font-face {
     font-family: 'Sarabun';
     src: url("{{ storage_path('fonts/Sarabun-Bold.ttf') }}") format("truetype");
-    font-weight: bold;
+    font-weight: 700;
+}
+
+/* 🔥 ใช้แบบเจาะ element (เสถียรกว่า *) */
+html, body, table, td, th, div, span {
+    font-family: 'Sarabun' !important;
 }
 
 /* ===== GLOBAL ===== */
 body {
-    font-family: 'Sarabun';
     font-size: 13px;
-    line-height: 1.35;
-    margin: 0;
+    line-height: 1.8;          /* 🔥 สำคัญมาก */
+    letter-spacing: 0;         /* 🔥 ห้ามมีค่าอื่น */
 
-    transform: scale(0.97);        /* 🔥 ดีกว่า zoom */
-    transform-origin: top left;
+    word-break: break-word;
+    overflow-wrap: break-word;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* 🔥 ล็อคสระทั้งระบบ */
+p, td, th, div, span {
+    line-height: 1.8 !important;
+    letter-spacing: 0 !important;
 }
 
 /* ===== TABLE ===== */
@@ -44,14 +63,14 @@ tr {
 }
 
 td, th {
-    padding: 4px 6px;         /* 🔥 ลด */
+    padding: 4px 6px;
     vertical-align: top;
 }
 
 /* ===== HEADER ===== */
 .logo-text {
-    font-size: 22px;          /* 🔥 ลด */
-    font-weight: bold;
+    font-size: 22px;
+    font-weight: 700;
     color: #14a37b;
 }
 
@@ -68,13 +87,13 @@ td, th {
     color: #fff;
     text-align: center;
     padding: 5px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .quote-no {
     text-align: center;
     padding: 5px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 /* ===== INFO ===== */
@@ -90,6 +109,7 @@ td, th {
     background: #43c6ac;
     color: #fff;
     border: 1px solid #000;
+    font-weight: 700;
 }
 
 .item-table td {
@@ -111,7 +131,7 @@ td, th {
     background: #f2f2f2;
     padding: 6px;
     text-align: center;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 .calc-table td {
@@ -125,17 +145,17 @@ td, th {
 .bg-green {
     background: #43c6ac;
     color: #fff;
-    font-weight: bold;
+    font-weight: 700;
 }
 
 /* ===== SIGN ===== */
 .signature-table {
-    margin-top: 10px; /* 🔥 ไม่ใช้ absolute แล้ว */
+    margin-top: 10px;
 }
 
 .signature-table td {
     border: 1px solid #000;
-    height: 70px; /* 🔥 ลด */
+    height: 70px;
     text-align: center;
     vertical-align: bottom;
 }
@@ -160,7 +180,7 @@ foreach ($items as $item) {
 $vat = $subtotal * 0.07;
 $grandTotal = $subtotal + $vat;
 
-$maxRows = 10; // 🔥 ปรับใหม่
+$maxRows = 10;
 $rowCount = count($items);
 
 function baht_text($number) {
@@ -172,10 +192,10 @@ function baht_text($number) {
 <table>
 <tr>
 <td width="50%">
-    <div class="logo-text">SME MOVE</div>
+    <div class="logo-text">ใบเสนอราคา</div>
 </td>
 <td class="company-info">
-    <b>Gameolo</b><br>
+    <b>บริษัท ตัวอย่าง จำกัด</b><br>
     กรุงเทพฯ 10400
 </td>
 </tr>
@@ -195,7 +215,9 @@ function baht_text($number) {
 <td>เครดิต: 60 วัน</td>
 </tr>
 <tr>
-<td colspan="2" style="height:30px;">ที่อยู่: {{ $invoice->customer->address ?? '-' }}</td>
+<td colspan="2" style="height:30px;">
+ที่อยู่: {{ $invoice->customer->address ?? '-' }}
+</td>
 </tr>
 </table>
 </td>
@@ -255,7 +277,10 @@ function baht_text($number) {
 <table class="calc-table">
 <tr><td>รวม</td><td class="text-right">{{ number_format($subtotal,2) }}</td></tr>
 <tr><td>VAT 7%</td><td class="text-right">{{ number_format($vat,2) }}</td></tr>
-<tr class="bg-green"><td>สุทธิ</td><td class="text-right">{{ number_format($grandTotal,2) }}</td></tr>
+<tr class="bg-green">
+<td>สุทธิ</td>
+<td class="text-right">{{ number_format($grandTotal,2) }}</td>
+</tr>
 </table>
 </td>
 </tr>

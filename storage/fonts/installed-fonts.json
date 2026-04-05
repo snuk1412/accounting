@@ -1,9 +1,7 @@
 {
-    "thsarabunnew": {
-        "normal": "thsarabunnew_normal_88f81fb3df615420f146734c422828a0"
-    },
     "sarabun": {
-        "normal": "\/Applications\/XAMPP\/xamppfiles\/htdocs\/accounting\/storage\/fonts\/sarabun_normal_adbd3c1dd4d7536ce867f6de12fb53a3",
-        "bold": "sarabun_bold_8a26ed8f8dbd4d4e039f29ec4e26a49f"
+        "normal": "\/Applications\/XAMPP\/xamppfiles\/htdocs\/accounting\/storage\/fonts\/sarabun_normal_0e6cad691a261df5ddc5a6f88ac82505",
+        "bold": "\/Applications\/XAMPP\/xamppfiles\/htdocs\/accounting\/storage\/fonts\/sarabun_bold_66047cc8e04b6366de433e3f3e0e0d57",
+        "500": "sarabun_500_0ef002f4ef0eb64a69c69631fd6db9f4"
     }
 }
