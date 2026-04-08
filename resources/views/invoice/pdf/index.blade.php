@@ -37,7 +37,7 @@ html, body, table, td, th, div, span {
 body {
     font-size: 13px;
     line-height: 1.8;          /* 🔥 สำคัญมาก */
-    letter-spacing: 0;         /* 🔥 ห้ามมีค่าอื่น */
+    letter-spacing: 0.5px;     /* เพิ่มระยะห่างระหว่างตัวอักษร */
 
     word-break: break-word;
     overflow-wrap: break-word;
@@ -49,7 +49,7 @@ body {
 /* 🔥 ล็อคสระทั้งระบบ */
 p, td, th, div, span {
     line-height: 1.8 !important;
-    letter-spacing: 0 !important;
+    letter-spacing: 0.5px !important; /* เพิ่มระยะห่างระหว่างตัวอักษร */
 }
 
 /* ===== TABLE ===== */
@@ -289,7 +289,7 @@ function baht_text($number) {
 <!-- SIGN -->
 <table class="signature-table">
 <tr>
-<td>ผู้สั่งซื้อ</td>
+<td>ผู้สั่งซือ</td>
 <td style="border:none;">SME MOVE</td>
 <td>ผู้อนุมัติ</td>
 </tr>
