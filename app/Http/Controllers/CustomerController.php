@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Company;
 use App\Models\Customer;
 use Illuminate\Http\Request;
 
@@ -14,15 +15,17 @@ class CustomerController extends Controller
         return view('customers.index', compact('data'));
     }
 
-   public function create()
+    public function create()
     {
-        return view('customers.create');
+        $companies = Company::orderBy('name')->get();
+        return view('customers.create', compact('companies'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $query = $request->validate([
             'customer_code' => 'nullable|max:20',
+    'companies_id' => 'required|exists:companies,id',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
             'tax_number' => 'nullable|max:20',
@@ -31,32 +34,26 @@ class CustomerController extends Controller
             'address' => 'nullable'
         ]);
 
-        Customer::create([
-            'customer_code' => $request->customer_code,
-            'name' => $request->name,
-            'company_name' => $request->company_name,
-            'tax_number' => $request->tax_number,
-            'phone' => $request->phone,
-            'email' => $request->email,
-            'address' => $request->address
-        ]);
+        Customer::create($query);
 
-        return redirect()->route('customers.index')
-            ->with('success', 'เพิ่มลูกค้าสำเร็จ');
+        return redirect()->route('customers.index')->with('success', 'เพิ่มลูกค้าสำเร็จ');
     }
 
-    public function edit($id)
+     public function edit($id)
     {
         $row = Customer::findOrFail($id);
-        return view('customers.edit', compact('row'));
+
+        $companies = Company::orderBy('name')->get();
+        return view('customers.edit', compact('row', 'companies'));
     }
 
     public function update(Request $request, $id)
     {
-        $request->validate([
+        $query = $request->validate([
             'customer_code' => 'nullable|max:20',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
+            'companies_id' => 'required|exists:companies,id',
             'tax_number' => 'nullable|max:20',
             'phone' => 'nullable|max:20',
             'email' => 'nullable|email|max:100',
@@ -65,15 +62,7 @@ class CustomerController extends Controller
 
         $row = Customer::findOrFail($id);
 
-        $row->update([
-            'customer_code' => $request->customer_code,
-            'name' => $request->name,
-            'company_name' => $request->company_name,
-            'tax_number' => $request->tax_number,
-            'phone' => $request->phone,
-            'email' => $request->email,
-            'address' => $request->address
-        ]);
+        $row->update($query);
 
         return redirect()->route('customers.index')
             ->with('success', 'แก้ไขข้อมูลสำเร็จ');
@@ -82,6 +71,7 @@ class CustomerController extends Controller
     public function destroy($id)
     {
         Customer::destroy($id);
+
 
         return redirect()->route('customers.index')
             ->with('success', 'ลบข้อมูลสำเร็จ');

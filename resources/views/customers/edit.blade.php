@@ -15,48 +15,90 @@
 
     <div class="glass-card p-4">
 
+      {{-- แสดง error ทั้งหมด --}}
+      @if ($errors->any())
+        <div class="alert alert-danger">
+          <ul class="mb-0">
+            @foreach ($errors->all() as $error)
+              <li>{{ $error }}</li>
+            @endforeach
+          </ul>
+        </div>
+      @endif
+
       <form method="POST" action="{{ route('customers.update', $row->id) }}">
         @csrf
         @method('PUT')
 
+        {{-- เลขบัตร --}}
         <div class="mb-3">
-          <label>เลขบัตรประชาชน/เลขที่ผู้เสียภาษี</label>
+          <label class="fw-bold">เลขบัตรประชาชน/เลขที่ผู้เสียภาษี</label>
+          <input type="text" name="customer_code" class="form-control @error('customer_code') is-invalid @enderror" value="{{ old('customer_code', $row->customer_code) }}" placeholder="กรอกเลขบัตร 13 หลัก">
 
-          <input type="text" name="customer_code" class="form-control" value="{{ $row->customer_code }}">
+          @error('customer_code')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
+        {{-- ชื่อ --}}
         <div class="mb-3">
-          <label>ชื่อลูกค้า</label>
+          <label class="fw-bold">ชื่อลูกค้า</label>
+          <input type="text" name="name" class="form-control @error('name') is-invalid @enderror" value="{{ old('name', $row->name) }}" placeholder="เช่น สมชาย ใจดี">
 
-          <input type="text" name="name" class="form-control" value="{{ $row->name }}" required>
+          @error('name')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
+        {{-- บริษัท --}}
         <div class="mb-3">
-          <label>บริษัท</label>
+          <label class="fw-bold">บริษัท</label>
+          <select name="companies_id" class="form-control @error('companies_id') is-invalid @enderror">
+            <option value="" selected disabled>-- เลือกบริษัท --</option>
+            @foreach ($companies as $company)
+              <option value="{{ $company->id }}" {{ $row->companies_id == $company->id ? 'selected' : '' }}>
+                {{ $company->name }}
+              </option>
+            @endforeach
+          </select>
 
-          <input type="text" name="company_name" class="form-control" value="{{ $row->company_name }}">
+          @error('companies_id')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
+        {{-- โทรศัพท์ --}}
         <div class="mb-3">
-          <label>โทรศัพท์</label>
+          <label class="fw-bold">โทรศัพท์</label>
+          <input type="text" name="phone" class="form-control @error('phone') is-invalid @enderror" value="{{ old('phone', $row->phone) }}" placeholder="08xxxxxxxx">
 
-          <input type="text" name="phone" class="form-control" value="{{ $row->phone }}">
+          @error('phone')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
+        {{-- Email --}}
         <div class="mb-3">
-          <label>Email</label>
+          <label class="fw-bold">Email</label>
+          <input type="text" name="email" class="form-control @error('email') is-invalid @enderror" value="{{ old('email', $row->email) }}" placeholder="example@email.com">
 
-          <input type="text" name="email" class="form-control" value="{{ $row->email }}">
+          @error('email')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
+        {{-- ที่อยู่ --}}
         <div class="mb-4">
-          <label>ที่อยู่</label>
+          <label class="fw-bold">ที่อยู่</label>
+          <textarea name="address" rows="3" class="form-control @error('address') is-invalid @enderror" placeholder="กรอกที่อยู่">{{ old('address', $row->address) }}</textarea>
 
-          <textarea name="address" rows="3" class="form-control">{{ $row->address }}</textarea>
+          @error('address')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
         </div>
 
-        <button class="btn btn-primary">
-          อัพเดทข้อมูล
+        <button class="btn btn-primary fw-bold">
+          💾 อัพเดทข้อมูล
         </button>
 
       </form>

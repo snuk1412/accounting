@@ -1,3 +1,8 @@
+<?php
+use Carbon\Carbon;
+use App\Models\CmsHelper as Cms;
+
+?>
 @extends('layouts.app')
 
 @section('title', 'ผู้ใช้งาน')
@@ -26,8 +31,11 @@
           <thead>
             <tr>
               <th class="pl-4">#</th>
+               <th>รูปภาพ</th>
               <th>ชื่อ</th>
               <th>Email</th>
+              <th>บริษัท</th>
+              <th>สิทธิผู้ใช้งาน</th>
               <th class="text-center pr-4" width="160">จัดการ</th>
             </tr>
           </thead>
@@ -43,6 +51,10 @@
                   </span>
                 </td>
 
+                <td class="align-middle">
+                  <img src="{{ $user->avatar }}" alt="avatar" class="rounded-circle" width="60">
+                </td>
+
                 <td class="align-middle font-weight-bold">
                   {{ $user->name }}
                 </td>
@@ -50,19 +62,25 @@
                 <td class="align-middle">
                   {{ $user->email }}
                 </td>
+                   <td class="align-middle">
+{{ Cms::CompanyName($user->companies_id) }}              </td>
+
+                   <td class="align-middle">
+                  {{ $user->role }}
+                </td>
 
                 <td class="align-middle text-center pr-4">
 
                   <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-outline-warning mr-1">
-                    แก้ไข
+                         <i class="fas fa-pen-square"></i>
                   </a>
 
                   <form method="POST" action="{{ route('users.destroy', $user->id) }}" style="display:inline;" class="delete-form">
                     @csrf
                     @method('DELETE')
 
-                    <button type="button" class="btn btn-sm btn-outline-danger btn-modern btn-delete">
-                      ลบ
+                    <button type="button" class="btn btn-sm btn-outline-danger btn-delete">
+                       <i class="fas fa-trash"></i>
                     </button>
                   </form>
 
@@ -73,7 +91,7 @@
             @empty
 
               <tr>
-                <td colspan="4" class="text-center py-4 text-muted">
+                <td colspan="6" class="text-center py-4 text-muted">
                   ไม่มีข้อมูลผู้ใช้งาน
                 </td>
               </tr>
