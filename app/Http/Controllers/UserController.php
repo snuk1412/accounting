@@ -5,16 +5,31 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use App\Models\company;
+use App\Models\Company;
 use Illuminate\Validation\Rule;
 
 class UserController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->get();
-        return view('user.index', compact('users'));
+        $users = User::where(function ($query) use ($request) {
+            if ($request->has('search') && !empty($request->search)) {
+                $query->where('name', 'like', '%' . $request->search . '%')
+                    ->orWhere('email', 'like', '%' . $request->search . '%');
+            }
+
+            if ($request->has('role') && !empty($request->role)) {
+                $query->where('role', $request->role);
+            }
+
+            if ($request->has('company_id') && !empty($request->company_id)) {
+                $query->where('companies_id', $request->company_id);
+            }
+        })->latest()->paginate(10)->withQueryString();
+
+        $companies = Company::orderBy('name')->get();
+        return view('user.index', compact('users', 'companies'));
     }
 
     public function create()
@@ -23,17 +38,44 @@ class UserController extends Controller
         return view('user.create', compact('companies'));
     }
 
-   public function store(Request $request)
+    public function store(Request $request)
     {
-        $QOUERY = $request->validate([
+        $data = $request->validate([
             'name' => 'required|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6',
+            'password' => 'required|min:8|confirmed',
             'companies_id' => 'required|exists:companies,id',
             'role' => 'required|in:admin,user,manager',
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        User::create($QOUERY);
+        // =========================
+        // PASSWORD HASH
+        // =========================
+        $data['password'] = Hash::make($data['password']);
+
+        // =========================
+        // UPLOAD AVATAR (NO STORAGE)
+        // =========================
+        if ($request->hasFile('avatar')) {
+
+            $destinationPath = public_path('avatars');
+
+            if (!file_exists($destinationPath)) {
+                mkdir($destinationPath, 0777, true);
+            }
+
+            $filename = time() . '.' . $request->file('avatar')->getClientOriginalExtension();
+
+            $request->file('avatar')->move($destinationPath, $filename);
+
+            $data['avatar'] = 'avatars/' . $filename;
+        }
+
+        // =========================
+        // CREATE USER
+        // =========================
+        User::create($data);
 
         return redirect()->route('users.index')->with('success', 'เพิ่มผู้ใช้งานสำเร็จ');
     }
@@ -47,11 +89,9 @@ class UserController extends Controller
     public function edit($id)
     {
         $user = User::findOrFail($id);
-$companies = Company::orderBy('name')->get();
+        $companies = Company::orderBy('name')->get();
         return view('user.edit', compact('user', 'companies'));
     }
-
-
     public function update(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -63,7 +103,7 @@ $companies = Company::orderBy('name')->get();
                 'email',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'password' => 'nullable|min:8',
+            'password' => 'nullable|min:8|confirmed',
             'companies_id' => 'required|exists:companies,id',
             'role' => 'required|in:admin,user,manager',
             'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
@@ -108,13 +148,13 @@ $companies = Company::orderBy('name')->get();
 
         return redirect()->route('users.index')->with('success', 'แก้ไขสำเร็จ');
     }
+
     public function destroy($id)
     {
         $user = User::findOrFail($id);
         $user->delete();
 
         return redirect()->route('users.index')
-            ->with('success','ลบผู้ใช้งานสำเร็จ');
+            ->with('success', 'ลบผู้ใช้งานสำเร็จ');
     }
-
 }

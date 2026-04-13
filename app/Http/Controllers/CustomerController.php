@@ -25,7 +25,6 @@ class CustomerController extends Controller
     {
         $query = $request->validate([
             'customer_code' => 'nullable|max:20',
-    'companies_id' => 'required|exists:companies,id',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
             'tax_number' => 'nullable|max:20',
@@ -39,7 +38,7 @@ class CustomerController extends Controller
         return redirect()->route('customers.index')->with('success', 'เพิ่มลูกค้าสำเร็จ');
     }
 
-     public function edit($id)
+    public function edit($id)
     {
         $row = Customer::findOrFail($id);
 
@@ -49,7 +48,7 @@ class CustomerController extends Controller
 
     public function update(Request $request, $id)
     {
-        $query = $request->validate([
+       $query = $request->validate([
             'customer_code' => 'nullable|max:20',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
@@ -61,17 +60,14 @@ class CustomerController extends Controller
         ]);
 
         $row = Customer::findOrFail($id);
-
         $row->update($query);
 
-        return redirect()->route('customers.index')
-            ->with('success', 'แก้ไขข้อมูลสำเร็จ');
+        return redirect()->route('customers.index')->with('success', 'แก้ไขข้อมูลสำเร็จ');
     }
 
     public function destroy($id)
     {
         Customer::destroy($id);
-
 
         return redirect()->route('customers.index')
             ->with('success', 'ลบข้อมูลสำเร็จ');

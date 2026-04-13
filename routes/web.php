@@ -25,8 +25,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
-//บริษัท
-Route::resource('companies', CompanyController::class);
+    //บริษัท
+    Route::resource('companies', CompanyController::class);
 
     // การเงิน
     Route::resource('income', IncomeController::class);

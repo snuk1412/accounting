@@ -19,7 +19,7 @@
       <table class="table table-bordered table-modern align-middle mb-0 table-hover">
         <thead style="background:#f8fafc;">
           <tr>
-            <th class="pl-4">เลขที่ผู้เสียภาษี</th>
+            <th class="text-center">เลขที่ผู้เสียภาษี</th>
             <th>ชื่อลูกค้า</th>
             <th>โทรศัพท์</th>
             <th>Email</th>
@@ -32,27 +32,28 @@
           @forelse($data as $row)
             <tr>
 
-<td class="pl-4">
-    {{ substr($row->customer_code,0,1).'-'.substr($row->customer_code,1,4).'-'.substr($row->customer_code,5,4).'-'.substr($row->customer_code,9,2).'-'.substr($row->customer_code,11,1) }}
-</td>
+              <td class="pl-4 text-center">
+                {{ $row->tax_id ?? 'N/A' }}
+              </td>
+
               <td>{{ $row->name }}</td>
 
-              <td>{{ $row->phone }}</td>
+              <td>{{ $row->phone ?? '' }}</td>
 
-              <td>{{ $row->email }}</td>
+              <td>{{ $row->email ?? '' }}</td>
 
               <td class="text-center text-nowrap pr-4">
 
-                <a href="{{ route('customers.edit', $row->id) }}" class="btn btn-sm btn-warning mr-1">
-                  แก้ไข
+                <a href="{{ route('customers.edit', $row->id) }}" class="btn btn-sm btn-warning mr-1" data-toggle="tooltip" title="แก้ไขข้อมูล">
+                  <i class="fas fa-edit"></i>
                 </a>
 
                 <form action="{{ route('customers.destroy', $row->id) }}" method="POST" style="display:inline;">
                   @csrf
                   @method('DELETE')
 
-                  <button class="btn btn-sm btn-danger">
-                    ลบ
+                  <button class="btn btn-sm btn-danger" data-toggle="tooltip" title="ลบข้อมูล" onclick="return confirm('คุณแน่ใจว่าต้องการลบลูกค้ารายนี้?');">
+                    <i class="fas fa-trash"></i>
                   </button>
 
                 </form>
@@ -89,5 +90,9 @@
 
     </div>
   </div>
+
+@endsection
+
+@section('js')
 
 @endsection

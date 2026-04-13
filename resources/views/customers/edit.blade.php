@@ -51,7 +51,7 @@
         </div>
 
         {{-- บริษัท --}}
-        <div class="mb-3">
+        <div class="mb-3 d-none">
           <label class="fw-bold">บริษัท</label>
           <select name="companies_id" class="form-control @error('companies_id') is-invalid @enderror">
             <option value="" selected disabled>-- เลือกบริษัท --</option>

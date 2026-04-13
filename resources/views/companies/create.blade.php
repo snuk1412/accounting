@@ -4,206 +4,191 @@
 
 @section('content')
 
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-        <h3 class="mb-0 font-weight-bold text-primary">➕ เพิ่มบริษัท</h3>
-        <small class="text-muted">Create Company</small>
+  <div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="fw-bold text-primary">🏢 เพิ่มบริษัท</h4>
+      <a href="{{ route('companies.index') }}" class="btn btn-secondary">กลับ</a>
     </div>
 
-    <a href="{{ route('companies.index') }}" class="btn btn-secondary shadow-sm">
-        ← กลับ
-    </a>
-</div>
+    <div class="card shadow-sm">
+      <div class="card-body">
 
-<div class="glass-card p-4 shadow-sm">
+        {{-- ERROR --}}
+        @if ($errors->any())
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+              @endforeach
+            </ul>
+          </div>
+        @endif
 
-    <form action="{{ route('companies.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
+        <form action="{{ route('companies.store') }}" method="POST" enctype="multipart/form-data">
+          @csrf
 
-        <div class="row">
+          <div class="row">
 
-            {{-- ชื่อบริษัท --}}
-            <div class="col-md-6 mb-3">
-                <label>ชื่อบริษัท *</label>
+            {{-- LEFT: LOGO --}}
+            <div class="col-md-4 text-center">
 
-                <input type="text"
-                       name="name"
-                       class="form-control"
-                       value="{{ old('name') }}"
-                       required>
+              <img id="logoPreview" src="https://ui-avatars.com/api/?name=Company" class="img-fluid rounded shadow-sm mb-2" style="width:250px;height:250px;object-fit:contain;">
 
-                @error('name')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
+              <input type="file" name="logo" class="form-control mt-2" onchange="previewLogo(event)">
+
+              @error('logo')
+                <div class="text-danger small">{{ $message }}</div>
+              @enderror
+
             </div>
 
-            {{-- เลขภาษี --}}
-            <div class="col-md-6 mb-3">
-                <label>เลขผู้เสียภาษี *</label>
+            {{-- RIGHT --}}
+            <div class="col-md-8">
 
-                <input type="text"
-                       name="tax_id"
-                       maxlength="13"
-                       class="form-control tax-id"
-                       value="{{ old('tax_id') }}"
-                       required>
+              {{-- TABS --}}
+              <ul class="nav nav-tabs mb-3">
+                <li class="nav-item">
+                  <button type="button" class="nav-link active" data-bs-toggle="tab" data-bs-target="#info">
+                    ข้อมูลบริษัท
+                  </button>
+                </li>
 
-                @error('tax_id')
-                    <small class="text-danger">{{ $message }}</small>
-                @enderror
-            </div>
+                <li class="nav-item">
+                  <button type="button" class="nav-link" data-bs-toggle="tab" data-bs-target="#contact">
+                    ติดต่อ
+                  </button>
+                </li>
+              </ul>
 
-            {{-- ประเภทธุรกิจ --}}
-            <div class="col-md-6 mb-3">
-                <label>ประเภทธุรกิจ *</label>
+              <div class="tab-content">
 
-                <select name="business_type"
-                        class="form-control"
-                        required>
+                {{-- TAB INFO --}}
+                <div class="tab-pane fade show active" id="info">
 
-                    <option value="">-- เลือก --</option>
+                  {{-- NAME --}}
+                  <div class="mb-3">
+                    <label>ชื่อบริษัท *</label>
+                    <input type="text" name="name" value="{{ old('name') }}" placeholder="กรอกชื่อบริษัท" class="form-control @error('name') is-invalid @enderror">
 
-                    @foreach(['บุคคลธรรมดา','ห้างหุ้นส่วน','บริษัทจำกัด','บริษัทมหาชน'] as $type)
+                    @error('name')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
 
-                        <option value="{{ $type }}"
-                            {{ old('business_type') == $type ? 'selected' : '' }}>
+                  {{-- TAX ID --}}
+                  <div class="mb-3">
+                    <label>เลขผู้เสียภาษี *</label>
+                    <input type="text" name="tax_id" value="{{ old('tax_id') }}" placeholder="กรอกเลขผู้เสียภาษี 13 หลัก" maxlength="13" class="form-control tax-id @error('tax_id') is-invalid @enderror">
 
-                            {{ $type }}
+                    @error('tax_id')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
 
-                        </option>
+                  {{-- BUSINESS TYPE --}}
+                  <div class="mb-3">
+                    <label>ประเภทธุรกิจ *</label>
+                    <select name="business_type" class="form-control @error('business_type') is-invalid @enderror">
 
-                    @endforeach
+                      <option value="">-- เลือกประเภทธุรกิจ --</option>
+                      <option value="บุคคลธรรมดา" {{ old('business_type') == 'บุคคลธรรมดา' ? 'selected' : '' }}>บุคคลธรรมดา</option>
+                      <option value="ห้างหุ้นส่วน" {{ old('business_type') == 'ห้างหุ้นส่วน' ? 'selected' : '' }}>ห้างหุ้นส่วน</option>
+                      <option value="บริษัทจำกัด" {{ old('business_type') == 'บริษัทจำกัด' ? 'selected' : '' }}>บริษัทจำกัด</option>
+                      <option value="บริษัทมหาชน" {{ old('business_type') == 'บริษัทมหาชน' ? 'selected' : '' }}>บริษัทมหาชน</option>
 
-                </select>
-            </div>
+                    </select>
 
-            {{-- ประเภทอุตสาหกรรม --}}
-            <div class="col-md-6 mb-3">
-                <label>ประเภทอุตสาหกรรม *</label>
+                    @error('business_type')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
 
-                <select name="industry_type"
-                        class="form-control"
-                        required>
+                  {{-- INDUSTRY --}}
+                  <div class="mb-3">
+                    <label>ประเภทอุตสาหกรรม *</label>
+                    <select name="industry_type" class="form-control @error('industry_type') is-invalid @enderror">
 
-                    <option value="">-- เลือก --</option>
+                      <option value="">-- เลือกประเภทอุตสาหกรรม --</option>
+                      <option value="การผลิต" {{ old('industry_type') == 'การผลิต' ? 'selected' : '' }}>การผลิต</option>
+                      <option value="การค้า" {{ old('industry_type') == 'การค้า' ? 'selected' : '' }}>การค้า</option>
+                      <option value="บริการ" {{ old('industry_type') == 'บริการ' ? 'selected' : '' }}>บริการ</option>
+                      <option value="ก่อสร้าง" {{ old('industry_type') == 'ก่อสร้าง' ? 'selected' : '' }}>ก่อสร้าง</option>
+                      <option value="เทคโนโลยี" {{ old('industry_type') == 'เทคโนโลยี' ? 'selected' : '' }}>เทคโนโลยี</option>
 
-                    @foreach(['การผลิต','การค้า','บริการ','ก่อสร้าง','เทคโนโลยี'] as $type)
+                    </select>
 
-                        <option value="{{ $type }}"
-                            {{ old('industry_type') == $type ? 'selected' : '' }}>
+                    @error('industry_type')
+                      <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                  </div>
 
-                            {{ $type }}
+                  {{-- PRODUCT --}}
+                  <div class="mb-3">
+                    <label>ประเภทสินค้า</label>
+                    <input type="text" name="product_type" value="{{ old('product_type') }}" placeholder="เช่น เครื่องใช้ไฟฟ้า / อาหาร / IT" class="form-control">
+                  </div>
 
-                        </option>
+                  {{-- EMPLOYEE --}}
+                  <div class="mb-3">
+                    <label>จำนวนพนักงาน *</label>
+                    <input type="number" name="employee_count" value="{{ old('employee_count', 0) }}" class="form-control">
+                  </div>
 
-                    @endforeach
-
-                </select>
-            </div>
-
-            {{-- ประเภทสินค้า --}}
-            <div class="col-md-6 mb-3">
-                <label>ประเภทสินค้า</label>
-
-                <input type="text"
-                       name="product_type"
-                       class="form-control"
-                       value="{{ old('product_type') }}">
-            </div>
-
-            {{-- จำนวนพนักงาน --}}
-            <div class="col-md-6 mb-3">
-                <label>จำนวนพนักงาน *</label>
-
-                <input type="number"
-                       name="employee_count"
-                       min="0"
-                       class="form-control"
-                       value="{{ old('employee_count') }}"
-                       required>
-            </div>
-
-            {{-- โทรศัพท์ --}}
-            <div class="col-md-6 mb-3">
-                <label>เบอร์โทร</label>
-
-                <input type="text"
-                       name="phone"
-                       class="form-control"
-                       value="{{ old('phone') }}">
-            </div>
-
-            {{-- Email --}}
-            <div class="col-md-6 mb-3">
-                <label>Email</label>
-
-                <input type="email"
-                       name="email"
-                       class="form-control"
-                       value="{{ old('email') }}">
-            </div>
-
-            {{-- ที่อยู่ --}}
-            <div class="col-12 mb-3">
-                <label>ที่อยู่</label>
-
-                <textarea name="address"
-                          rows="3"
-                          class="form-control">{{ old('address') }}</textarea>
-            </div>
-
-            {{-- Logo --}}
-            <div class="col-12 mb-4">
-                <label>โลโก้บริษัท</label>
-
-                <input type="file"
-                       name="logo"
-                       class="form-control-file"
-                       onchange="previewLogo(event)">
-
-                <div class="mt-2">
-                    <img id="logo-preview"
-                         style="max-height:80px; display:none;">
                 </div>
+
+                {{-- TAB CONTACT --}}
+                <div class="tab-pane fade" id="contact">
+
+                  {{-- PHONE --}}
+                  <div class="mb-3 mt-3">
+                    <label>เบอร์โทร</label>
+                    <input type="text" name="phone" value="{{ old('phone') }}" placeholder="081-xxx-xxxx" class="form-control">
+                  </div>
+
+                  {{-- EMAIL --}}
+                  <div class="mb-3">
+                    <label>Email</label>
+                    <input type="email" name="email" value="{{ old('email') }}" placeholder="example@email.com" class="form-control">
+                  </div>
+
+                  {{-- ADDRESS --}}
+                  <div class="mb-3">
+                    <label>ที่อยู่</label>
+                    <textarea name="address" rows="3" placeholder="กรอกที่อยู่บริษัท" class="form-control">{{ old('address') }}</textarea>
+                  </div>
+
+                </div>
+
+              </div>
+
             </div>
 
-        </div>
+          </div>
 
-        <div class="text-right">
-            <button class="btn btn-primary px-4">
-                💾 บันทึกข้อมูล
+          <div class="d-flex justify-content-end">
+            <button class="btn btn-primary mt-3">
+              💾 บันทึกข้อมูล
             </button>
-        </div>
+          </div>
 
-    </form>
+        </form>
 
-</div>
+      </div>
+    </div>
 
-{{-- JS --}}
-<script>
+  </div>
 
-function previewLogo(event) {
-
-    const img = document.getElementById('logo-preview');
-
-    if (event.target.files.length > 0) {
-
-        img.src = URL.createObjectURL(event.target.files[0]);
-        img.style.display = 'block';
-
+  {{-- SCRIPT --}}
+  <script>
+    function previewLogo(event) {
+      const img = document.getElementById('logoPreview');
+      img.src = URL.createObjectURL(event.target.files[0]);
     }
 
-}
-
-// format tax id
-document.querySelector('.tax-id').addEventListener('input', function(){
-
-    this.value = this.value
-        .replace(/[^0-9]/g,'')
-        .slice(0,13);
-
-});
-
-</script>
+    document.querySelector('.tax-id')?.addEventListener('input', function() {
+      this.value = this.value.replace(/[^0-9]/g, '').slice(0, 13);
+    });
+  </script>
 
 @endsection

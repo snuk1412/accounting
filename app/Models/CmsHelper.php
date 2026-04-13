@@ -2,107 +2,129 @@
 
 namespace App\Models;
 
-use App\Models\emptype;
-use App\Models\Prints;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Carbon\Carbon;
 
 class CmsHelper
 {
     use HasFactory;
 
-    //=====================================================================================================
-    // หมวด แปลงค่า
-    //=====================================================================================================
-
-    // ใช้แล้วของมูลวันที่ เช่น 2021-01-11 08:04:01 เป็นวันที่ภาษาไทย
-    // ตัวอย่างการใช้งาน {{ DateThai($val) }} จะแสดงเป็น 11 มกราคม 2564
+    // ==============================
+    // แปลงวันที่เป็นภาษาไทย
+    // ==============================
     public static function DateThai($strDate)
     {
-        if ($strDate == '0000-00-00' || $strDate == '' || $strDate == null) {
-            return '-';
+        if (empty($strDate) || $strDate === '0000-00-00') {
+            return [
+                "dmY" => '-',
+                "dmy" => '-',
+                "dMY" => '-',
+                "dMYt" => '-',
+                "dmYHi" => '-',
+                "dMYHi" => '-',
+                "dMYHin" => '-',
+                "Hi" => '-',
+                "Date" => '-',
+                "d" => '-',
+                "m" => '-',
+                "M" => '-',
+                "Y" => '-',
+            ];
         }
 
-        $strYear = date("Y", strtotime($strDate)) + 543;
-        $strYear1 = date("y", strtotime($strDate)) + 43;
-        $strYear2 = date("Y", strtotime($strDate)) ;
-        $strMonth = date("n", strtotime($strDate));
-        $strMonth2 = date("m", strtotime($strDate));
-        $strDay = date("j", strtotime($strDate));
-        $strHour = date("H", strtotime($strDate));
-        $strMinute = date("i", strtotime($strDate));
-        $strSeconds = date("s", strtotime($strDate));
-        $strMonthCut = array("", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.", "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.");
-        $strMonthCut2 = array("", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน", "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม");
-        $strMonthThai = $strMonthCut[$strMonth];
-        $strMonthThai2 = $strMonthCut2[$strMonth];
-        // return "$strDay $strMonthThai $strYear, $strHour:$strMinute";
+        try {
+            $date = Carbon::parse($strDate);
+        } catch (\Exception $e) {
+            return ['dmY' => '-'];
+        }
 
-        return array(
-            // "Ymd" => $strYear2 . '-' . $strMonth . '-' . $strDay,
-            "dmY" => $strDay . ' ' . $strMonthThai . ' ' . $strYear,
-            "dmy" => $strDay . ' ' . $strMonthThai . ' ' . $strYear1,
-            "dMY" => $strDay . ' ' . $strMonthThai2 . ' ' . $strYear,
-            "dMYt" => $strDay . ' เดือน ' . $strMonthThai2 . ' พ.ศ. ' . $strYear,
-            "dmYHi" => $strDay . ' ' . $strMonthThai . ' ' . $strYear . ' เวลา ' . $strHour . ':' . $strMinute,
-            "dMYHi" => $strDay . ' ' . $strMonthThai2 . ' ' . $strYear . ' เวลา ' . $strHour . ':' . $strMinute,
-            "dMYHin" => $strDay . ' ' . $strMonthThai2 . ' ' . $strYear . ' เวลา ' . $strHour . ':' . $strMinute . ' น.',
-            "Hi" => $strHour . ':' . $strMinute,
-            "Date" => $strYear2 . '-' . $strMonth2 . '-' . $strDay,
-            "d" => $strDay,
-            "m" => $strMonthThai,
-            "M" => $strMonthThai2,
-            "Y" => $strYear,
-        );
+        $year = $date->year + 543;
+        $yearShort = substr($year, -2);
+
+        $month = $date->month;
+        $day = $date->day;
+
+        $hour = $date->format('H');
+        $minute = $date->format('i');
+
+        $monthShort = [
+            "", "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+            "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค."
+        ];
+
+        $monthFull = [
+            "", "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
+            "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม"
+        ];
+
+        return [
+            "dmY" => "$day {$monthShort[$month]} $year",
+            "dmy" => "$day {$monthShort[$month]} $yearShort",
+            "dMY" => "$day {$monthFull[$month]} $year",
+            "dMYt" => "$day เดือน {$monthFull[$month]} พ.ศ. $year",
+            "dmYHi" => "$day {$monthShort[$month]} $year เวลา $hour:$minute",
+            "dMYHi" => "$day {$monthFull[$month]} $year เวลา $hour:$minute",
+            "dMYHin" => "$day {$monthFull[$month]} $year เวลา $hour:$minute น.",
+            "Hi" => "$hour:$minute",
+            "Date" => $date->format('Y-m-d'),
+            "d" => $day,
+            "m" => $monthShort[$month],
+            "M" => $monthFull[$month],
+            "Y" => $year,
+        ];
     }
 
-    // แปลงเลขเดือนเป็นชื่อเดือน
-    // เรียกใช้งาน {{ Cms::MonthThai($val) }}
+    // ==============================
+    // เดือนเป็นภาษาไทย
+    // ==============================
     public static function MonthThai($val)
     {
         $arr = [
-            '1' => 'มกราคม',
-            '2' => 'กุมภาพันธ์',
-            '3' => 'มีนาคม',
-            '4' => 'เมษายน',
-            '5' => 'พฤษภาคม',
-            '6' => 'มิถุนายน',
-            '7' => 'กรกฎาคม',
-            '8' => 'สิงหาคม',
-            '9' => 'กันยายน',
-            '10' => 'ตุลาคม',
-            '11' => 'พฤศจิกายน',
-            '12' => 'ธันวาคม',
+            1 => 'มกราคม',
+            2 => 'กุมภาพันธ์',
+            3 => 'มีนาคม',
+            4 => 'เมษายน',
+            5 => 'พฤษภาคม',
+            6 => 'มิถุนายน',
+            7 => 'กรกฎาคม',
+            8 => 'สิงหาคม',
+            9 => 'กันยายน',
+            10 => 'ตุลาคม',
+            11 => 'พฤศจิกายน',
+            12 => 'ธันวาคม',
         ];
-        return $arr[$val] ?? false;
+
+        return $arr[(int)$val] ?? null;
     }
 
-    // แปลงเครื่องหมาย 01/02/2022 -> 2022-02-01 (dash)
-    // แปลงเครื่องหมาย 2022-02-01 -> 01/02/2022 (slash)
-    // เรียกใช้งาน {{ Cms::DateFormat($val)['dash'] }}
+    // ==============================
+    // แปลง format วันที่
+    // ==============================
     public static function DateChangeFormat($val)
     {
-        if (empty($val)) {
+        if (empty($val)) return false;
+
+        try {
+            [$day, $month, $year] = explode("/", $val);
+            $year = (int)$year - 543;
+
+            return [
+                'dash' => sprintf('%04d-%02d-%02d', $year, $month, $day),
+                'slash' => sprintf('%02d/%02d/%04d', $day, $month, $year),
+            ];
+        } catch (\Exception $e) {
             return false;
         }
-
-        [$day, $month, $year] = explode("/", $val);
-        $year -= 543;
-
-        return [
-            'dash' => "$year-$month-$day",
-            'slash' => "$day/$month/$year",
-        ];
     }
 
-    // แปลงเดือนไทยเป็นเลข
-    // เรียกใช้งาน Cms::Date_Month2Num[$val]
+    // ==============================
+    // เดือนภาษาไทย -> เลข
+    // ==============================
     public static function Date_Month2Num($val)
     {
-        if (empty($val)) {
-            return false;
-        }
+        if (empty($val)) return false;
 
-        $array = [
+        $months = [
             'มกราคม' => '01',
             'กุมภาพันธ์' => '02',
             'มีนาคม' => '03',
@@ -116,54 +138,55 @@ class CmsHelper
             'พฤศจิกายน' => '11',
             'ธันวาคม' => '12',
         ];
-        $bc_year = explode(" ", $val);
-        $day = $bc_year['0'];
-        $month = $array[$bc_year['1']];
-        $year = $bc_year['2'] - 543;
-        return $year . '-' . $month . '-' . $day;
+
+        try {
+            [$day, $monthName, $year] = explode(" ", $val);
+            $month = $months[$monthName] ?? '01';
+            $year = (int)$year - 543;
+
+            return "$year-$month-$day";
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
-    // แปลงเลขอราบิคเป็นไทย
-    // เรียกใช้งาน Cms::Numth[$val]
+    // ==============================
+    // เลขไทย
+    // ==============================
     public static function Numth($val)
     {
-        $temp = str_replace("0", "๐", $val);
-        $temp = str_replace("1", "๑", $temp);
-        $temp = str_replace("2", "๒", $temp);
-        $temp = str_replace("3", "๓", $temp);
-        $temp = str_replace("4", "๔", $temp);
-        $temp = str_replace("5", "๕", $temp);
-        $temp = str_replace("6", "๖", $temp);
-        $temp = str_replace("7", "๗", $temp);
-        $temp = str_replace("8", "๘", $temp);
-        $temp = str_replace("9", "๙", $temp);
-        return $temp;
+        return strtr($val, [
+            "0" => "๐", "1" => "๑", "2" => "๒", "3" => "๓", "4" => "๔",
+            "5" => "๕", "6" => "๖", "7" => "๗", "8" => "๘", "9" => "๙"
+        ]);
     }
 
-    // กำหนดรูปแบบโทรศัพท์ : {{ Cms::TextFormat($value,'__-____-____') }}
-    // กำหนดรูปแบบบัตรประชาชน : {{ Cms::TextFormat($value) }}
-    public static function TextFormat($text = '', $pattern = '', $ex = '')
+    // ==============================
+    // format text เช่น บัตรประชาชน / เบอร์โทร
+    // ==============================
+    public static function TextFormat($text = '', $pattern = '', $separator = '-')
     {
-        $cid = ($text == '') ? '0000000000000' : $text;
-        $pattern = ($pattern == '') ? '_-____-_____-__-_' : $pattern;
-        $p = explode('-', $pattern);
-        $ex = ($ex == '') ? '-' : $ex;
-        $first = 0;
-        $last = 0;
-        for ($i = 0; $i <= count($p) - 1; $i++) {
-            $first = $first + $last;
-            $last = strlen($p[$i]);
-            $returnText[$i] = substr($cid, $first, $last);
+        if (empty($text)) return '';
+
+        $pattern = $pattern ?: '_-____-_____-__-_';
+        $blocks = explode('-', $pattern);
+
+        $result = [];
+        $offset = 0;
+
+        foreach ($blocks as $block) {
+            $length = strlen($block);
+            $result[] = substr($text, $offset, $length);
+            $offset += $length;
         }
-        return implode($ex, $returnText);
+
+        return implode($separator, $result);
     }
 
+    // companies_id => ชื่อบริษัท
     public static function CompanyName($id)
     {
-        $company = Company::findOrFail($id);
-        return $company ? $company->name : '';
+        $company = Company::find($id);
+        return $company ? $company->name : '-';
     }
-
 }
-
-

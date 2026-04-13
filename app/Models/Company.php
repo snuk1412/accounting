@@ -22,4 +22,13 @@ class Company extends Model
         'logo',
         'is_default',
     ];
+
+    protected $casts = [
+        'is_default' => 'boolean',
+    ];
+
+    public function users()
+    {
+        return $this->hasMany(User::class);
+    }
 }

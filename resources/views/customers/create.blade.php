@@ -54,23 +54,22 @@ use Illuminate\Support\Facades\Auth;
         </div>
 
         {{-- บริษัท --}}
-      <select name="companies_id"
-    class="form-control @error('companies_id') is-invalid @enderror">
+        <div class="mb-3 d-none">
+          <label class="fw-bold">บริษัท</label>
+          <select name="company_name" class="form-control @error('company_name') is-invalid @enderror">
+            <option value="" selected disabled>-- เลือกบริษัท --</option>
+            @foreach ($companies as $company)
+              <option value="{{ $company->id }}" {{ old('company_name', auth::user()->companies_id) == $company->id ? 'selected' : 'disabled' }}>
+                {{ $company->name }}
+              </option>
+            @endforeach
+          </select>
 
-    <option value="">-- เลือกบริษัท --</option>
+          @error('company_name')
+            <div class="invalid-feedback">{{ $message }}</div>
+          @enderror
+        </div>
 
-    @foreach ($companies as $company)
-
-        <option value="{{ $company->id }}"
-            {{ old('companies_id', Auth::user()->companies_id ?? '') == $company->id ? 'selected' : '' }}>
-
-            {{ $company->name }}
-
-        </option>
-
-    @endforeach
-
-</select>
         {{-- โทรศัพท์ --}}
         <div class="mb-3">
           <label class="fw-bold">โทรศัพท์</label>

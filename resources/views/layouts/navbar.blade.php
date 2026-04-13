@@ -1,11 +1,14 @@
+<?php
+use App\Models\User;
+$user = User::find(auth()->user()->id);
+?>
+
 <div class="top-navbar d-flex justify-content-between align-items-center">
 
   <!-- LEFT -->
   <div class="d-flex align-items-center">
 
-    <i class="fas fa-bars sidebar-toggle me-3 mr-2"
-       onclick="toggleSidebar()"
-       style="cursor:pointer"></i>
+    <i class="fas fa-bars sidebar-toggle me-3 mr-2" onclick="toggleSidebar()" style="cursor:pointer"></i>
 
     <strong class="mb-0">@yield('title')</strong>
 
@@ -22,16 +25,19 @@
     <!-- USER -->
     <div class="dropdown">
 
-      <a class="d-flex align-items-center text-decoration-none dropdown-toggle"
-         data-bs-toggle="dropdown"
-         style="cursor:pointer">
+      <a class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" style="cursor:pointer">
 
-        <img src="https://i.pravatar.cc/40"
+        {{-- <img src="https://i.pravatar.cc/40"
              width="32"
              height="32"
-             class="rounded-circle me-2 mr-1">
+             class="rounded-circle me-2 mr-1"> --}}
 
-        <span>{{ auth()->user()->name ?? 'User' }}</span>
+        <img src="{{ $user->avatar ? asset($user->avatar) : 'https://ui-avatars.com/api/?name=' . $user->name }}"
+                width="32"
+             height="32"
+         class="rounded-circle me-2 mr-1">
+
+        {{-- <span>{{ auth()->user()->name ?? 'User' }}</span> --}}
 
       </a>
 
@@ -43,7 +49,9 @@
           </a>
         </li>
 
-        <li><hr class="dropdown-divider"></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
 
         <li>
           <form method="POST" action="{{ route('logout') }}">
