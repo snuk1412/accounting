@@ -1,6 +1,6 @@
 <?php
 use App\Models\User;
-$user = User::find(auth()->user()->id);
+$user = User::find(auth()->id());
 ?>
 
 <div class="top-navbar d-flex justify-content-between align-items-center">
@@ -31,11 +31,10 @@ $user = User::find(auth()->user()->id);
              width="32"
              height="32"
              class="rounded-circle me-2 mr-1"> --}}
-
-        <img src="{{ $user->avatar ? asset($user->avatar) : 'https://ui-avatars.com/api/?name=' . $user->name }}"
-                width="32"
-             height="32"
-         class="rounded-circle me-2 mr-1">
+<img src="{{ optional($user)->avatar ? asset($user->avatar) : 'https://ui-avatars.com/api/?name=' . urlencode(optional($user)->name ?? 'User') }}"
+     width="32"
+     height="32"
+     class="rounded-circle me-2 mr-1">
 
         {{-- <span>{{ auth()->user()->name ?? 'User' }}</span> --}}
 
