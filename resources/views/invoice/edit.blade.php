@@ -48,7 +48,25 @@
             @enderror
 
           </div>
+   <div class="col-md-6 mb-3">
 
+            <label>ประเภท</label>
+
+            <select name="type" class="form-control @error('type') is-invalid @enderror" value="{{ old('type', $invoice->type) }}">
+
+              <option value="sale" {{ old('type', $invoice->type) == 'sale' ? 'selected' : '' }}>
+               ขาย
+              </option>
+              <option value="purchase" {{ old('type', $invoice->type) == 'purchase' ? 'selected' : '' }}>
+             ชื้อ
+              </option>
+            </select>
+
+            @error('type')
+              <div class="invalid-feedback">{{ $message }}</div>
+            @enderror
+
+          </div>
         </div>
 
         <div class="mb-3">

@@ -189,4 +189,21 @@ class CmsHelper
         $company = Company::find($id);
         return $company ? $company->name : '-';
     }
+
+       public static function GetCompany($id)
+{
+    // 1. Find the customer
+    $customer = Customer::find($id);
+
+    // 2. Safely find the company only if the customer exists
+    $company = ($customer && $customer->companies_id)
+               ? Company::find($customer->companies_id)
+               : null;
+
+    // 3. Return the array with defaults
+    return [
+        'name' => $company->name ?? '-',
+        'tax'  => $company->tax_id ?? '-'
+    ];
+}
 }

@@ -15,36 +15,57 @@ use App\Models\Payment;
 
 class InvoiceController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Invoice::with('customer');
+  public function index(Request $request)
+{
+    $query = Invoice::with('customer');
 
-        // ฟิลเตอร์ชื่อลูกค้า
-        if ($request->filled('customer')) {
-            $query->whereHas('customer', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->customer . '%');
-            });
-        }
-
-        // ฟิลเตอร์ตาม status (0=ค้างชำระ, 1=ชำระครบ, 2=เกินกำหนด)
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        // ฟิลเตอร์ตามช่วงวันที่ครบกำหนด
-        if ($request->filled('date_from')) {
-            $query->where('due_date', '>=', $request->date_from);
-        }
-        if ($request->filled('date_to')) {
-            $query->where('due_date', '<=', $request->date_to);
-        }
-
-        $data = $query->orderBy('due_date', 'asc')
-            ->paginate(10)
-            ->withQueryString();
-
-        return view('invoice.index', compact('data'));
+    // ฟิลเตอร์ชื่อลูกค้า
+    if ($request->filled('customer')) {
+        $query->whereHas('customer', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->customer . '%');
+        });
     }
+
+    // กรองตามประเภท (sale/purchase)
+    if ($request->filled('type')) {
+        $query->where('type', $request->type);
+    }
+
+    // ฟิลเตอร์ตาม status
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    // ฟิลเตอร์ตามช่วงวันที่ครบกำหนด
+    if ($request->filled('date_from')) {
+        $query->where('due_date', '>=', $request->date_from);
+    }
+    if ($request->filled('date_to')) {
+        $query->where('due_date', '<=', $request->date_to);
+    }
+
+    // --- ส่วนคำนวณยอดสรุป (Summary) ก่อน Paginate ---
+    // ใช้ clone เพื่อไม่ให้เงื่อนไขการคำนวณไปกระทบกับตัวแปร $query หลัก
+    $summaryQuery = clone $query;
+
+    $summary = [
+        'count' => $summaryQuery->count(),
+        'total_all' => $summaryQuery->sum('total') ?? 0,
+        // เฉพาะงานขาย: ชำระแล้ว
+        'sale_paid' => (clone $query)->where('type', 'sale')->sum('paid') ?? 0,
+        // เฉพาะงานขาย: คงเหลือ (Total - Paid)
+        'sale_balance' => (clone $query)->where('type', 'sale')
+                            ->selectRaw('SUM(total - paid) as balance')
+                            ->value('balance') ?? 0,
+    ];
+
+    // ดึงข้อมูลแบบแบ่งหน้า
+    $data = $query->orderBy('due_date', 'asc')
+        ->paginate(10)
+        ->withQueryString();
+
+    return view('invoice.index', compact('data', 'summary'));
+}
 
     public function create()
     {
@@ -76,7 +97,8 @@ class InvoiceController extends Controller
             'invoice_no' => 'required|unique:invoices,invoice_no',
             'customer_id' => 'required|exists:customers,id',
             'due_date' => 'required',
-            'items' => 'required|array'
+            'items' => 'required|array',
+            'type' => ['required',new In(['sale', 'purchase'])]
         ]);
 
         $due_date = Carbon::createFromFormat('d/m/Y', $request->due_date)->format('Y-m-d');
@@ -108,7 +130,8 @@ class InvoiceController extends Controller
             'paid' => 0,
             'due_date' => $due_date,
             'status' => 0,
-            'items' => $items
+            'items' => $items,
+            'type' => $request->type
         ]);
 
         return redirect()->route('invoice.index')
@@ -123,13 +146,14 @@ class InvoiceController extends Controller
         return view('invoice.edit', compact('invoice', 'customers'));
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         $request->validate([
             'invoice_no' => 'required|unique:invoices,invoice_no,' . $id,
             'customer_id' => 'required|exists:customers,id',
             'due_date' => 'required',
-            'items' => 'required|array'
+            'items' => 'required|array',
+            'type' => 'required|in:sale,purchase'
         ]);
 
         $due_date = Carbon::createFromFormat('d/m/Y', $request->due_date)->format('Y-m-d');
@@ -171,12 +195,14 @@ class InvoiceController extends Controller
             'total' => $total,
             'paid' => $paid,
             'status' => $status,
-            'items' => $items
+            'items' => $items,
+            'type' => $request->type
         ]);
 
         return redirect()->route('invoice.index')
             ->with('success', 'อัปเดตใบแจ้งหนี้สำเร็จ');
     }
+
     public function destroy($id)
     {
         Invoice::findOrFail($id)->delete();
@@ -239,8 +265,19 @@ class InvoiceController extends Controller
 
         $pdf = Pdf::loadView('invoice.pdf.index', compact('invoice'));
 
-        return $pdf->download('invoice_' . $invoice->invoice_no . '.pdf');
+        return $pdf->stream('invoice_' . $invoice->invoice_no . '.pdf');
     }
+
+
+   public function purchase_pdf()
+    {
+        
+        $invoices = Invoice::with('customer')->where('type', 'purchase')->get();
+        $pdf = Pdf::loadView('invoice.pdf.purchase', compact('invoices'));
+        return $pdf->stream('purchase_invoices.pdf');
+
+    }
+
 
     public function excel($id)
     {

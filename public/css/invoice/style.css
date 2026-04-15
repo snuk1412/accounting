@@ -1,0 +1,164 @@
+
+/* ===== PAGE ===== */
+@page {
+    size: A4;
+    margin: 0.7cm;
+}
+
+/* ===== FONT ===== */
+@font-face {
+    font-family: 'Sarabun';
+    src: url("{{ storage_path('fonts/Sarabun-Regular.ttf') }}") format("truetype");
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'Sarabun';
+    src: url("{{ storage_path('fonts/Sarabun-Medium.ttf') }}") format("truetype");
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'Sarabun';
+    src: url("{{ storage_path('fonts/Sarabun-Bold.ttf') }}") format("truetype");
+    font-weight: 700;
+}
+
+/* 🔥 ใช้แบบเจาะ element (เสถียรกว่า *) */
+html, body, table, td, th, div, span {
+    font-family: 'Sarabun' !important;
+}
+
+/* ===== GLOBAL ===== */
+body {
+    font-size: 13px;
+    line-height: 1.8;          /* 🔥 สำคัญมาก */
+    letter-spacing: 0.5px;     /* เพิ่มระยะห่างระหว่างตัวอักษร */
+
+    word-break: break-word;
+    overflow-wrap: break-word;
+
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* 🔥 ล็อคสระทั้งระบบ */
+p, td, th, div, span {
+    line-height: 1.8 !important;
+    letter-spacing: 0.5px !important; /* เพิ่มระยะห่างระหว่างตัวอักษร */
+    
+}
+
+/* ===== TABLE ===== */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #000;
+}
+
+tr {
+    page-break-inside: avoid;
+}
+
+td, th {
+    padding: 4px 6px;
+    vertical-align: top;
+    border: 1px solid #000;
+}
+
+/* ===== HEADER ===== */
+.logo-text {
+    font-size: 22px;
+    font-weight: 700;
+    color: #14a37b;
+}
+
+.company-info {
+    text-align: right;
+    font-size: 11px;
+}
+
+/* ===== QUOTE ===== */
+.quote-box { border: 1px solid #000; }
+
+.quote-title {
+    background: #43c6ac;
+    color: #fff;
+    text-align: center;
+    padding: 5px;
+    font-weight: 700;
+}
+
+.quote-no {
+    text-align: center;
+    padding: 5px;
+    font-weight: 700;
+}
+
+/* ===== INFO ===== */
+.info-section td {
+    border: 1px solid #000;
+    font-size: 12px;
+}
+
+/* ===== ITEM ===== */
+.item-table { margin-top: 6px; }
+
+.item-table th {
+    background: #43c6ac;
+    color: #fff;
+    border: 1px solid #000;
+    font-weight: 700;
+}
+
+.item-table td {
+    border-left: 1px solid #000;
+    border-right: 1px solid #000;
+}
+
+.item-table tr:last-child td {
+    border-bottom: 1px solid #000;
+}
+
+/* ===== SUMMARY ===== */
+.summary-container {
+    border: 1px solid #000;
+    border-top: none;
+}
+
+.amount-thai {
+    background: #f2f2f2;
+    padding: 6px;
+    text-align: center;
+    font-weight: 700;
+}
+
+.calc-table td {
+    border-bottom: 1px solid #000;
+}
+
+.calc-table tr:last-child td {
+    border-bottom: none;
+}
+
+.bg-green {
+    background: #43c6ac;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* ===== SIGN ===== */
+.signature-table {
+    margin-top: 10px;
+}
+
+.signature-table td {
+    border: 1px solid #000;
+    height: 70px;
+    text-align: center;
+    vertical-align: bottom;
+}
+
+/* ===== UTIL ===== */
+.text-right { text-align: right; }
+.text-center { text-align: center; }
+
+

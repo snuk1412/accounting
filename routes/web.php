@@ -66,4 +66,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('quotation/{id}/pdf', [InvoiceController::class, 'pdf'])->name('invoice.pdf');
     // Route::get('quotation/{id}/excel', [InvoiceController::class, 'excel'])->name('quotation.excel');
+
+        Route::get('sale/pdf', [InvoiceController::class, 'sale_pdf'])->name('sale.pdf');
+        Route::get('purchase/pdf', [InvoiceController::class, 'purchase_pdf'])->name('purchase.pdf');
+
 });
