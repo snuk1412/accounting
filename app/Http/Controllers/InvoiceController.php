@@ -19,24 +19,22 @@ class InvoiceController extends Controller
 {
     $query = Invoice::with('customer');
 
-    // ฟิลเตอร์ชื่อลูกค้า
-    if ($request->filled('customer')) {
-        $query->whereHas('customer', function ($q) use ($request) {
-            $q->where('name', 'like', '%' . $request->customer . '%');
-        });
+    // 1. ฟิลเตอร์ลูกค้า (เปลี่ยนจาก Like Name เป็น ID)
+    if ($request->filled('customer_id')) {
+        $query->where('customer_id', $request->customer_id);
     }
 
-    // กรองตามประเภท (sale/purchase)
+    // 2. กรองตามประเภท (sale/purchase)
     if ($request->filled('type')) {
         $query->where('type', $request->type);
     }
 
-    // ฟิลเตอร์ตาม status
+    // 3. ฟิลเตอร์ตาม status
     if ($request->filled('status')) {
         $query->where('status', $request->status);
     }
 
-    // ฟิลเตอร์ตามช่วงวันที่ครบกำหนด
+    // 4. ฟิลเตอร์ตามช่วงวันที่ครบกำหนด
     if ($request->filled('date_from')) {
         $query->where('due_date', '>=', $request->date_from);
     }
@@ -44,29 +42,30 @@ class InvoiceController extends Controller
         $query->where('due_date', '<=', $request->date_to);
     }
 
-    // --- ส่วนคำนวณยอดสรุป (Summary) ก่อน Paginate ---
-    // ใช้ clone เพื่อไม่ให้เงื่อนไขการคำนวณไปกระทบกับตัวแปร $query หลัก
+    // --- ส่วนคำนวณยอดสรุป (Summary) ---
+    // ใช้ clone $query ที่ถูก filter มาแล้ว เพื่อให้ยอด summary ตรงกับรายการที่แสดง
     $summaryQuery = clone $query;
 
     $summary = [
-        'count' => $summaryQuery->count(),
-        'total_all' => $summaryQuery->sum('total') ?? 0,
-        // เฉพาะงานขาย: ชำระแล้ว
-        'sale_paid' => (clone $query)->where('type', 'sale')->sum('paid') ?? 0,
-        // เฉพาะงานขาย: คงเหลือ (Total - Paid)
-        'sale_balance' => (clone $query)->where('type', 'sale')
+        'count'        => $summaryQuery->count(),
+        'total_all'    => $summaryQuery->sum('total') ?? 0,
+        'sale_paid'    => (clone $summaryQuery)->where('type', 'sale')->sum('paid') ?? 0,
+        'sale_balance' => (clone $summaryQuery)->where('type', 'sale')
                             ->selectRaw('SUM(total - paid) as balance')
                             ->value('balance') ?? 0,
     ];
 
-    // ดึงข้อมูลแบบแบ่งหน้า
+    // ดึงข้อมูลสำหรับรายชื่อลูกค้าใน Select Dropdown
+    $customers = Customer::orderBy('name', 'asc')->get();
+
+    // ดึงข้อมูลรายการแบบแบ่งหน้า
     $data = $query->orderBy('due_date', 'asc')
         ->paginate(10)
         ->withQueryString();
 
-    return view('invoice.index', compact('data', 'summary'));
+    // ส่ง $customers กลับไปด้วยเพื่อให้หน้า View นำไปวน Loop ใน <select>
+    return view('invoice.index', compact('data', 'summary', 'customers'));
 }
-
     public function create()
     {
         // ดึง Invoice ล่าสุด
@@ -271,10 +270,18 @@ class InvoiceController extends Controller
 
    public function purchase_pdf()
     {
-        
+
         $invoices = Invoice::with('customer')->where('type', 'purchase')->get();
         $pdf = Pdf::loadView('invoice.pdf.purchase', compact('invoices'));
         return $pdf->stream('purchase_invoices.pdf');
+
+    }
+   public function sale_pdf()
+    {
+
+        $invoices = Invoice::with('customer')->where('type', 'sale')->get();
+        $pdf = Pdf::loadView('invoice.pdf.sale', compact('invoices'));
+        return $pdf->stream('sale_invoices.pdf');
 
     }
 

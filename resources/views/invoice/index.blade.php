@@ -84,13 +84,19 @@
     <form method="GET" action="{{ route('invoice.index') }}">
         <div class="row g-3">
             {{-- แถวที่ 1: ตัวเลือกการกรอง --}}
-            <div class="col-md-3">
-                <label class="small font-weight-bold text-secondary mb-1">
-                    <i class="fas fa-search me-1"></i> ค้นหาลูกค้า
-                </label>
-                <input type="text" name="customer" class="form-control form-control-modern" placeholder="ชื่อลูกค้า..." value="{{ request('customer') }}">
-            </div>
-
+          <div class="col-md-3">
+    <label class="small font-weight-bold text-secondary mb-1">
+        <i class="fas fa-user me-1"></i> เลือกลูกค้า
+    </label>
+    <select name="customer_id" class="form-select form-control-modern">
+        <option value="">--- ทั้งหมด ---</option>
+        @foreach($customers as $customer)
+            <option value="{{ $customer->id }}" {{ request('customer_id') == $customer->id ? 'selected' : '' }}>
+                {{ $customer->name }}
+            </option>
+        @endforeach
+    </select>
+</div>
             <div class="col-md-2">
                 <label class="small font-weight-bold text-secondary mb-1">
                     <i class="fas fa-filter me-1"></i> ประเภท
@@ -279,4 +285,13 @@
       });
     });
   </script>
+<script>
+    $(document).ready(function() {
+    $('.select2-customer').select2({
+        theme: 'bootstrap-5', // หรือตาม theme ที่คุณใช้
+        width: '100%',
+        placeholder: 'เลือกลูกค้า...'
+    });
+});
+</script>
 @endsection

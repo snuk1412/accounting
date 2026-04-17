@@ -7,12 +7,12 @@ use App\Models\CmsHelper as Cms;
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>รายงานภาษีซื้อ</title>
+    <title>รายงานภาษีขาย</title>
 <link rel="stylesheet" href="{{ public_path('css/invoice/style.css') }}"></head>
 <body>
     <div class="report-container">
         <header>
-            <h2>รายงานภาษีซื้อ</h2>
+            <h2>รายงานภาษีขาย</h2>
             <div class="header-meta">
                 <p>ประจำเดือน: <strong>สิงหาคม</strong> พ.ศ. <strong>2567</strong></p>
                 <p>ชื่อผู้ประกอบการ: <strong>บริษัท ตัวอย่างง จำกัด </strong></p>

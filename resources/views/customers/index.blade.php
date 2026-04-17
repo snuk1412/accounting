@@ -1,3 +1,4 @@
+
 @extends('layouts.app')
 @section('title', 'ลูกค้า')
 
@@ -33,7 +34,7 @@
             <tr>
 
               <td class="pl-4 text-center">
-                {{ $row->tax_id ?? 'N/A' }}
+                {{ $row->customer_code ?? 'N/A' }}
               </td>
 
               <td>{{ $row->name }}</td>
@@ -43,6 +44,7 @@
               <td>{{ $row->email ?? '' }}</td>
 
               <td class="text-center text-nowrap pr-4">
+
 
                 <a href="{{ route('customers.edit', $row->id) }}" class="btn btn-sm btn-warning mr-1" data-toggle="tooltip" title="แก้ไขข้อมูล">
                   <i class="fas fa-edit"></i>
@@ -95,4 +97,4 @@
 
 @section('js')
 
-@endsection
+@endsection.

@@ -27,6 +27,7 @@ class CustomerController extends Controller
             'customer_code' => 'nullable|max:20',
             'name' => 'required|max:255',
             'company_name' => 'nullable|max:255',
+            'companies_id' => 'required|exists:companies,id',
             'tax_number' => 'nullable|max:20',
             'phone' => 'nullable|max:20',
             'email' => 'nullable|email|max:100',
@@ -39,32 +40,42 @@ class CustomerController extends Controller
     }
 
     public function edit($id)
-    {
-        $row = Customer::findOrFail($id);
+{
+    $customer = Customer::findOrFail($id);
+    $companies = Company::orderBy('name')->get();
 
-        $companies = Company::orderBy('name')->get();
-        return view('customers.edit', compact('row', 'companies'));
-    }
+    return view('customers.edit', compact(
+        'customer',
+        'companies'
+    ));
+}
 
-    public function update(Request $request, $id)
-    {
-       $query = $request->validate([
-            'customer_code' => 'nullable|max:20',
-            'name' => 'required|max:255',
-            'company_name' => 'nullable|max:255',
-            'companies_id' => 'required|exists:companies,id',
-            'tax_number' => 'nullable|max:20',
-            'phone' => 'nullable|max:20',
-            'email' => 'nullable|email|max:100',
-            'address' => 'nullable'
-        ]);
+public function update(Request $request,$id)
+{
+    $customer = Customer::findOrFail($id);
 
-        $row = Customer::findOrFail($id);
-        $row->update($query);
+    $request->validate([
+        'companies_id' => 'required|exists:companies,id',
+        'customer_code' => 'required|digits:13|unique:customers,customer_code,'.$id,
+        'name' => 'required|string|max:255',
+        'phone' => 'nullable|string|max:20',
+        'email' => 'nullable|email',
+        'address' => 'nullable|string',
+    ]);
 
-        return redirect()->route('customers.index')->with('success', 'แก้ไขข้อมูลสำเร็จ');
-    }
+    $customer->update([
+        'companies_id' => $request->companies_id,
+        'customer_code' => $request->customer_code,
+        'name' => $request->name,
+        'phone' => $request->phone,
+        'email' => $request->email,
+        'address' => $request->address,
+    ]);
 
+    return redirect()
+        ->route('customers.index')
+        ->with('success','แก้ไขลูกค้าเรียบร้อย');
+}
     public function destroy($id)
     {
         Customer::destroy($id);

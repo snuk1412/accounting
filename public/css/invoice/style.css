@@ -1,7 +1,7 @@
 
 /* ===== PAGE ===== */
 @page {
-    size: A4;
+   size: A4 landscape; /* 🔥 ปรับเป็นแนวนอนตรงนี้ */
     margin: 0.7cm;
 }
 
@@ -40,11 +40,13 @@ body {
     text-rendering: optimizeLegibility;
 }
 
-/* 🔥 ล็อคสระทั้งระบบ */
 p, td, th, div, span {
-    line-height: 1.8 !important;
-    letter-spacing: 0.5px !important; /* เพิ่มระยะห่างระหว่างตัวอักษร */
-    
+    line-height: 1.5 !important;      /* ลดลงเล็กน้อยเพื่อความสวยงามในแนวนอน */
+    letter-spacing: 0px !important;    /* ⚠️ ข้อควรระวัง: letter-spacing ในภาษาไทย
+                                         ถ้าใส่ค่ามากไป สระอาจจะแยกออกจากตัวอักษรได้
+                                         แนะนำให้เริ่มจาก 0 หรือ 0.1px */
+    padding-top: 2px;                 /* เพิ่ม space ด้านบนเพื่อไม่ให้สระบนโดนตัด */
+    padding-bottom: 2px;              /* เพิ่ม space ด้านล่างเพื่อไม่ให้สระล่างโดนตัด */
 }
 
 /* ===== TABLE ===== */
